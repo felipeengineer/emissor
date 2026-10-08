@@ -111,6 +111,17 @@ def test_servico_invalido(kw):
         montar_dps(DadosDPS(prestador(), None, servico(**kw), "1", 1))
 
 
+def test_regras_de_rejeicao_da_sefin():
+    # E0712: ME/EPP precisa de pTotTribSN (indTotTrib é proibido)
+    with pytest.raises(ErroValidacao, match="E0712"):
+        montar_dps(DadosDPS(prestador(), None, servico(aliquota_simples=None), "1", 1))
+    # E0235: tomador com CNPJ exige endereço
+    with pytest.raises(ErroValidacao, match="E0235"):
+        montar_dps(DadosDPS(prestador(), Tomador("11222333000181", "ACME"), servico(), "1", 1))
+    # tomador com CPF pode ir sem endereço
+    montar_dps(DadosDPS(prestador(), Tomador("52998224725", "Fulano"), servico(), "1", 1))
+
+
 def test_iss_retido_exige_tomador():
     with pytest.raises(ErroValidacao):
         montar_dps(DadosDPS(prestador(), None, servico(retencao_iss=2), "1", 1))
@@ -136,9 +147,9 @@ TOMADOR_COMPLETO = Tomador(
             servico(codigo_tributacao_municipal="001", codigo_nbs="123456789", retencao_iss=2,
                     aliquota_iss="2.01", desconto_incondicionado="10"),
         ),
-        (prestador(), None, servico(aliquota_simples=None)),  # sem tomador e sem alíquotas
+        (prestador(), None, servico()),  # sem tomador e sem pAliq
         (prestador(opcao_simples=OpcaoSimplesNacional.MEI), TOMADOR_COMPLETO, servico()),  # MEI
-        (prestador(documento="52998224725"), Tomador("11222333000181", "ACME"), servico()),  # prestador CPF, tomador CNPJ
+        (prestador(documento="52998224725"), Tomador("11222333000181", "ACME", TOMADOR_COMPLETO.endereco), servico()),  # prestador CPF, tomador CNPJ
     ],
 )
 def test_dps_confere_com_xsd_oficial(pfx, prest, tom, serv):

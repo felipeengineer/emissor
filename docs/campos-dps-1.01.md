@@ -1,0 +1,342 @@
+# Campos da DPS — leiaute 1.01
+
+Gerado a partir do XSD oficial (`emissor/schemas/1.01`). `OBRIG` = obrigatório pelo esquema; `opc` = opcional; `opção` = um item de um grupo "escolha um". Regras de negócio da SEFIN podem tornar campos opcionais obrigatórios (veja o README).
+
+```text
+- tpAmb [OBRIG] — Identificação do Ambiente: 1 - Produção; 2 - Homologação
+- dhEmi [OBRIG] — Data e hora da emissão do DPS. Data e hora no formato UTC (Universal Coordinated Time): AAAA-MM-DDThh:mm:ssTZD
+- verAplic [OBRIG] — Versão do aplicativo que gerou o DPS
+- serie [OBRIG] — Número do equipamento emissor do DPS ou série do DPS
+- nDPS [OBRIG] — Número do DPS
+- dCompet [OBRIG] — Data em que se iniciou a prestação do serviço: Dia, mês e ano (AAAAMMDD)
+- tpEmit [OBRIG] — Emitente da DPS: 1 - Prestador; 2 - Tomador; 3 - Intermediário
+- cMotivoEmisTI [opc] — Motivo da Emissão da DPS pelo Tomador/Intermediário: 1 - Importação de Serviço; 2 - Tomador/Intermediário obrigado a emitir NFS-e por legislação munic
+- chNFSeRej [opc] — Chave de Acesso da NFS-e rejeitada pelo Tomador/Intermediário.
+- cLocEmi [OBRIG] — O código de município utilizado pelo Sistema Nacional NFS-e é o código definido para cada município pertencente ao ""Anexo V – Tabela de Código de Mun
+- subst [opc] — Dados da NFS-e a ser substituída
+  - chSubstda [OBRIG] — Chave de acesso da NFS-e a ser substituída
+  - cMotivo [OBRIG] — Código de justificativa para substituição de NFS-e: 01 - Desenquadramento de NFS-e do Simples Nacional; 02 - Enquadramento de NFS-e no Simples Naciona
+  - xMotivo [opc] — Descrição do motivo da substituição da NFS-e
+- prest [OBRIG] — Grupo de informações do DPS relativas ao Prestador de Serviços
+  [ESCOLHA UM (obrigatório)]
+    - CNPJ [opção] — Número do CNPJ
+    - CPF [opção] — Número do CPF
+    - NIF [opção] — Número de Identificação Fiscal fornecido por órgão de administração tributária no exterior
+    - cNaoNIF [opção] — Motivo para não informação do NIF: 0 - Não informado na nota de origem; 1 - Dispensado do NIF; 2 - Não exigência do NIF;
+  - CAEPF [opc] — Número do Cadastro de Atividade Econômica da Pessoa Física (CAEPF) do prestador do serviço.
+  - IM [opc] — Número da inscrição municipal
+  - xNome [opc] — Nome/Nome Empresarial do prestador
+  - end [opc] — Dados de endereço do prestador
+    [ESCOLHA UM (obrigatório)]
+      - endNac [opção] — Grupo de informações específicas de endereço nacional
+        - cMun [OBRIG] — Código do município, conforme Tabela do IBGE
+        - CEP [OBRIG] — Número do CEP
+      - endExt [opção] — Grupo de informações específicas de endereço no exterior
+        - cPais [OBRIG] — Código do país (Tabela de Países ISO)
+        - cEndPost [OBRIG] — Código alfanumérico do Endereçamento Postal no exterior do prestador do serviço.
+        - xCidade [OBRIG] — Nome da cidade no exterior do prestador do serviço.
+        - xEstProvReg [OBRIG] — Estado, província ou região da cidade no exterior do prestador do serviço.
+    - xLgr [OBRIG] — Tipo e nome do logradouro da localização do imóvel
+    - nro [OBRIG] — Número do imóvel
+    - xCpl [opc] — Complemento do endereço
+    - xBairro [OBRIG] — Bairro
+  - fone [opc] — Número do telefone do prestador: Preencher com o Código DDD + número do telefone. Nas operações com exterior é permitido informar o código do país + c
+  - email [opc] — E-mail
+  - regTrib [OBRIG] — Grupo de informações relativas aos regimes de tributação do prestador de serviços
+    - opSimpNac [OBRIG] — Situação perante o Simples Nacional: 1 - Não Optante; 2 - Optante - Microempreendedor Individual (MEI); 3 - Optante - Microempresa ou Empresa de Peque
+    - regApTribSN [opc] — Opção para que o contribuinte optante pelo Simples Nacional ME/EPP (opSimpNac = 3) possa indicar, ao emitir o documento fiscal, em qual regime de apur
+    - regEspTrib [OBRIG] — Tipos de Regimes Especiais de Tributação: 0 - Nenhum; 1 - Ato Cooperado (Cooperativa); 2 - Estimativa; 3 - Microempresa Municipal; 4 - Notário ou Regi
+- toma [opc] — Grupo de informações do DPS relativas ao Tomador de Serviços
+  [ESCOLHA UM (obrigatório)]
+    - CNPJ [opção] — Número do CNPJ
+    - CPF [opção] — Número do CPF
+    - NIF [opção] — Número de Identificação Fiscal fornecido por órgão de administração tributária no exterior
+    - cNaoNIF [opção] — Motivo para não informação do NIF: 0 - Não informado na nota de origem; 1 - Dispensado do NIF; 2 - Não exigência do NIF;
+  - CAEPF [opc] — Número do Cadastro de Atividade Econômica da Pessoa Física (CAEPF)
+  - IM [opc] — Número da inscrição municipal
+  - xNome [OBRIG] — Nome/Nome Empresarial
+  - end [opc] — Dados de endereço
+    [ESCOLHA UM (obrigatório)]
+      - endNac [opção] — Grupo de informações específicas de endereço nacional
+        - cMun [OBRIG] — Código do município, conforme Tabela do IBGE
+        - CEP [OBRIG] — Número do CEP
+      - endExt [opção] — Grupo de informações específicas de endereço no exterior
+        - cPais [OBRIG] — Código do país (Tabela de Países ISO)
+        - cEndPost [OBRIG] — Código alfanumérico do Endereçamento Postal no exterior do prestador do serviço.
+        - xCidade [OBRIG] — Nome da cidade no exterior do prestador do serviço.
+        - xEstProvReg [OBRIG] — Estado, província ou região da cidade no exterior do prestador do serviço.
+    - xLgr [OBRIG] — Tipo e nome do logradouro da localização do imóvel
+    - nro [OBRIG] — Número do imóvel
+    - xCpl [opc] — Complemento do endereço
+    - xBairro [OBRIG] — Bairro
+  - fone [opc] — Número do telefone do prestador: Preencher com o Código DDD + número do telefone. Nas operações com exterior é permitido informar o código do país + c
+  - email [opc] — E-mail
+- interm [opc] — Grupo de informações do DPS relativas ao Intermediário de Serviços
+  [ESCOLHA UM (obrigatório)]
+    - CNPJ [opção] — Número do CNPJ
+    - CPF [opção] — Número do CPF
+    - NIF [opção] — Número de Identificação Fiscal fornecido por órgão de administração tributária no exterior
+    - cNaoNIF [opção] — Motivo para não informação do NIF: 0 - Não informado na nota de origem; 1 - Dispensado do NIF; 2 - Não exigência do NIF;
+  - CAEPF [opc] — Número do Cadastro de Atividade Econômica da Pessoa Física (CAEPF)
+  - IM [opc] — Número da inscrição municipal
+  - xNome [OBRIG] — Nome/Nome Empresarial
+  - end [opc] — Dados de endereço
+    [ESCOLHA UM (obrigatório)]
+      - endNac [opção] — Grupo de informações específicas de endereço nacional
+        - cMun [OBRIG] — Código do município, conforme Tabela do IBGE
+        - CEP [OBRIG] — Número do CEP
+      - endExt [opção] — Grupo de informações específicas de endereço no exterior
+        - cPais [OBRIG] — Código do país (Tabela de Países ISO)
+        - cEndPost [OBRIG] — Código alfanumérico do Endereçamento Postal no exterior do prestador do serviço.
+        - xCidade [OBRIG] — Nome da cidade no exterior do prestador do serviço.
+        - xEstProvReg [OBRIG] — Estado, província ou região da cidade no exterior do prestador do serviço.
+    - xLgr [OBRIG] — Tipo e nome do logradouro da localização do imóvel
+    - nro [OBRIG] — Número do imóvel
+    - xCpl [opc] — Complemento do endereço
+    - xBairro [OBRIG] — Bairro
+  - fone [opc] — Número do telefone do prestador: Preencher com o Código DDD + número do telefone. Nas operações com exterior é permitido informar o código do país + c
+  - email [opc] — E-mail
+- serv [OBRIG] — Grupo de informações do DPS relativas ao Serviço Prestado
+  - locPrest [OBRIG] — Grupo de informações relativas ao local da prestação do serviço
+    [ESCOLHA UM (obrigatório)]
+      - cLocPrestacao [opção] — Código do município onde o serviço foi prestado (tabela do IBGE)
+      - cPaisPrestacao [opção] — Código do país onde o serviço foi prestado (Tabela de Países ISO)
+  - cServ [OBRIG] — Grupo de informações relativas ao código do serviço prestado
+    - cTribNac [OBRIG] — Código de tributação nacional do ISSQN, nos termos da LC 116/2003, conforme aba MUN.INCID_INFO.SERV. do ANEXO I Regra de formação - 6 dígitos numérico
+    - cTribMun [opc] — Código de tributação municipal do ISSQN
+    - xDescServ [OBRIG] — Descrição completa do serviço prestado
+    - cNBS [opc] — Código NBS correspondente ao serviço prestado, seguindo a versão 2.0, conforme Anexo B
+    - cIntContrib [opc] — Código interno do contribuinte
+  - comExt [opc] — Grupo de informações relativas à exportação/importação de serviço prestado
+    - mdPrestacao [OBRIG] — Modo de Prestação: 0 - Desconhecido (tipo não informado na nota de origem); 1 - Transfronteiriço; 2 - Consumo no Brasil; 3 - Movimento Temporário de P
+    - vincPrest [OBRIG] — Vínculo entre as partes no negócio: 0 - Sem vínculo com o Tomador/Prestador 1 - Controlada; 2 - Controladora; 3 - Coligada; 4 - Matriz; 5 - Filial ou 
+    - tpMoeda [OBRIG] — Identifica a moeda da transação comercial
+    - vServMoeda [OBRIG] — Valor do serviço prestado expresso em moeda estrangeira especificada em tpmoeda
+    - mecAFComexP [OBRIG] — Mecanismo de apoio/fomento ao Comércio Exterior utilizado pelo prestador do serviço: 00 - Desconhecido (tipo não informado na nota de origem); 01 - Ne
+    - mecAFComexT [OBRIG] — Mecanismo de apoio/fomento ao Comércio Exterior utilizado pelo tomador do serviço: 00 - Desconhecido (tipo não informado na nota de origem); 01 - Nenh
+    - movTempBens [OBRIG] — Vínculo da Operação à Movimentação Temporária de Bens: 0 - Desconhecido (tipo não informado na nota de origem); 1 - Não; 2 - Vinculada - Declaração de
+    - nDI [opc] — Número da Declaração de Importação (DI/DSI/DA/DRI-E) averbado
+    - nRE [opc] — Número do Registro de Exportação (RE) averbado
+    - mdic [OBRIG] — Compartilhar as informações da NFS-e gerada a partir desta DPS com a Secretaria de Comércio Exterior: 0 - Não enviar para o MDIC; 1 - Enviar para o MD
+  - obra [opc] — Grupo de informações do DPS relativas à serviço de obra
+    - inscImobFisc [opc] — Inscrição imobiliária fiscal (código fornecido pela Prefeitura Municipal para a identificação da obra ou para fins de recolhimento do IPTU)
+    [ESCOLHA UM (obrigatório)]
+      - cObra [opção] — Número de identificação da obra. Cadastro Nacional de Obras (CNO) ou Cadastro Específico do INSS (CEI).
+      - cCIB [opção] — Código do Cadastro Imobiliário Brasileiro - CIB.
+      - end [opção] — Grupo de informações do endereço da obra do serviço prestado
+        [ESCOLHA UM (obrigatório)]
+          - CEP [opção] — Número do CEP
+          - endExt [opção] — Grupo de informações específicas de endereço no exterior
+            - cEndPost [OBRIG] — Código alfanumérico do Endereçamento Postal no exterior do prestador do serviço.
+            - xCidade [OBRIG] — Nome da cidade no exterior do prestador do serviço.
+            - xEstProvReg [OBRIG] — Estado, província ou região da cidade no exterior do prestador do serviço.
+        - xLgr [OBRIG] — Tipo e nome do logradouro da localização do imóvel
+        - nro [OBRIG] — Número do imóvel
+        - xCpl [opc] — Complemento do endereço
+        - xBairro [OBRIG] — Bairro
+  - atvEvento [opc] — Grupo de informações do DPS relativas à Evento
+    - xNome [OBRIG] — Descrição do evento Artístico, Cultural, Esportivo, etc
+    - dtIni [OBRIG] — Data de início da atividade de evento. Ano, Mês e Dia (AAAA-MM-DD)
+    - dtFim [OBRIG] — Data de fim da atividade de evento. Ano, Mês e Dia (AAAA-MM-DD)
+    [ESCOLHA UM (obrigatório)]
+      - idAtvEvt [opção] — Identificação da Atividade de Evento (código identificador de evento determinado pela Administração Tributária Municipal)
+      - end [opção] — Grupo de informações relativas ao endereço da atividade, evento ou local do serviço prestado
+        [ESCOLHA UM (obrigatório)]
+          - CEP [opção] — Número do CEP
+          - endExt [opção] — Grupo de informações específicas de endereço no exterior
+            - cEndPost [OBRIG] — Código alfanumérico do Endereçamento Postal no exterior do prestador do serviço.
+            - xCidade [OBRIG] — Nome da cidade no exterior do prestador do serviço.
+            - xEstProvReg [OBRIG] — Estado, província ou região da cidade no exterior do prestador do serviço.
+        - xLgr [OBRIG] — Tipo e nome do logradouro da localização do imóvel
+        - nro [OBRIG] — Número do imóvel
+        - xCpl [opc] — Complemento do endereço
+        - xBairro [OBRIG] — Bairro
+  - infoCompl [opc] — Grupo de informações complementares disponível para todos os serviços prestados
+    - idDocTec [opc] — Identificador de Documento de Responsabilidade Técnica: ART, RRT, DRT, Outros.
+    - docRef [opc] — Chave da nota, número identificador da nota, número do contrato ou outro identificador de documento emitido pelo prestador de serviços, que subsidia a
+    - xPed [opc] — Número do pedido/ordem de compra/ordem de serviço/projeto que autorize a prestação do serviço em operações B2B - Informação de interesse do tomador do
+    - gItemPed [opc] — Grupo de itens do pedido/ordem de compra/ordem de serviço/projeto
+      - xItemPed [OBRIG] (até 99) — Número do item do pedido/ordem de compra/ordem de serviço/projeto - Identificação do número do item do pedido ou ordem de compra destacado e xPed
+    - xInfComp [opc] — Informações complementares
+- valores [OBRIG] — Grupo de informações relativas à valores do serviço prestado
+  - vServPrest [OBRIG] — Grupo de informações relativas aos valores do serviço prestado
+    - vReceb [opc] — Valor monetário recebido pelo intermediário do serviço (R$)
+    - vServ [OBRIG] — Valor dos serviços em R$
+  - vDescCondIncond [opc] — Grupo de informações relativas aos descontos condicionados e incondicionados
+    - vDescIncond [opc] — Valor monetário do desconto incondicionado (R$)
+    - vDescCond [opc] — Valor monetário do desconto condicionado (R$)
+  - vDedRed [opc] — Grupo de informações relativas ao valores para dedução/redução do valor da base de cálculo (valor do serviço)
+    [ESCOLHA UM (obrigatório)]
+      - pDR [opção] — Valor percentual padrão para dedução/redução do valor do serviço
+      - vDR [opção] — Valor monetário padrão para dedução/redução do valor do serviço
+      - documentos [opção] — Grupo de informações de documento utilizado para Dedução/Redução do valor do serviço
+        - docDedRed [OBRIG] (até 1000) — Grupo de informações de documento utilizado para Dedução/Redução do valor do serviço
+          [ESCOLHA UM (obrigatório)]
+            - chNFSe [opção] — Chave de Acesso da NFS-e (Padrão Nacional)
+            - chNFe [opção] — Chave de Acesso da NF-e
+            - NFSeMun [opção] — Grupo de informações de Outras NFS-e (Padrão anterior de NFS-e)
+              - cMunNFSeMun [OBRIG] — Código Município emissor da nota eletrônica municipal (Tabela do IBGE)
+              - nNFSeMun [OBRIG] — Número da nota eletrônica municipal
+              - cVerifNFSeMun [OBRIG] — Código de Verificação da nota eletrônica municipal
+            - NFNFS [opção] — Grupo de informações de NF ou NFS (Modelo não eletrônico)
+              - nNFS [OBRIG] — Número da Nota Fiscal NF ou NFS
+              - modNFS [OBRIG] — Modelo da Nota Fiscal NF ou NFS
+              - serieNFS [OBRIG] — Série Nota Fiscal NF ou NFS
+            - nDocFisc [opção] — Número de documento fiscal
+            - nDoc [opção] — Número de documento não fiscal
+          - tpDedRed [OBRIG] — Identificação da Dedução/Redução: 1 – Alimentação e bebidas/frigobar; 2 – Materiais; 3 - Produção Externa; 4 - Reembolso de despesas; 5 – Repasse cons
+          - xDescOutDed [opc] — Descrição da Dedução/Redução quando a opção é "99 – Outras Deduções"
+          - dtEmiDoc [OBRIG] — Data da emissão do documento dedutível. Ano, mês e dia (AAAA-MM-DD)
+          - vDedutivelRedutivel [OBRIG] — Valor monetário total dedutível/redutível no documento informado (R$). Este é o valor total no documento informado que é passível de dedução/redução.
+          - vDeducaoReducao [OBRIG] — Valor monetário utilizado para dedução/redução do valor do serviço da NFS-e que está sendo emitida (R$). Deve ser menor ou igual ao valor deduzível/re
+          - fornec [opc] — Grupo de informações do Fornecedor em Deduções de Serviços
+            [ESCOLHA UM (obrigatório)]
+              - CNPJ [opção] — Número do CNPJ
+              - CPF [opção] — Número do CPF
+              - NIF [opção] — Número de Identificação Fiscal fornecido por órgão de administração tributária no exterior
+              - cNaoNIF [opção] — Motivo para não informação do NIF: 0 - Não informado na nota de origem; 1 - Dispensado do NIF; 2 - Não exigência do NIF;
+            - CAEPF [opc] — Número do Cadastro de Atividade Econômica da Pessoa Física (CAEPF)
+            - IM [opc] — Número da inscrição municipal
+            - xNome [OBRIG] — Nome/Nome Empresarial
+            - end [opc] — Dados de endereço
+              [ESCOLHA UM (obrigatório)]
+                - endNac [opção] — Grupo de informações específicas de endereço nacional
+                  - cMun [OBRIG] — Código do município, conforme Tabela do IBGE
+                  - CEP [OBRIG] — Número do CEP
+                - endExt [opção] — Grupo de informações específicas de endereço no exterior
+                  - cPais [OBRIG] — Código do país (Tabela de Países ISO)
+                  - cEndPost [OBRIG] — Código alfanumérico do Endereçamento Postal no exterior do prestador do serviço.
+                  - xCidade [OBRIG] — Nome da cidade no exterior do prestador do serviço.
+                  - xEstProvReg [OBRIG] — Estado, província ou região da cidade no exterior do prestador do serviço.
+              - xLgr [OBRIG] — Tipo e nome do logradouro da localização do imóvel
+              - nro [OBRIG] — Número do imóvel
+              - xCpl [opc] — Complemento do endereço
+              - xBairro [OBRIG] — Bairro
+            - fone [opc] — Número do telefone do prestador: Preencher com o Código DDD + número do telefone. Nas operações com exterior é permitido informar o código do país + c
+            - email [opc] — E-mail
+  - trib [OBRIG] — Grupo de informações relacionados aos tributos relacionados ao serviço prestado
+    - tribMun [OBRIG] — Grupo de informações relacionados ao Imposto Sobre Serviços de Qualquer Natureza - ISSQN
+      - tribISSQN [OBRIG] — Tributação do ISSQN sobre o serviço prestado: 1 - Operação tributável; 2 - Imunidade; 3 - Exportação de serviço; 4 - Não Incidência;
+      - cPaisResult [opc] — Código do país onde se verficou o resultado da prestação do serviço para o caso de Exportação de Serviço.(Tabela de Países ISO)
+      - tpImunidade [opc] — Identificação da Imunidade do ISSQN – somente para o caso de Imunidade. Tipos de Imunidades: 0 - Imunidade (tipo não informado na nota de origem); 1 -
+      - exigSusp [opc] — Informações para a suspensão da Exigibilidade do ISSQN
+        - tpSusp [OBRIG] — Opção para Exigibilidade Suspensa: 1 - Exigibilidade Suspensa por Decisão Judicial; 2 - Exigibilidade Suspensa por Processo Administrativo;
+        - nProcesso [OBRIG] — Número do processo judicial ou administrativo de suspensão da exigibilidade
+      - BM [opc] — Tributação do ISSQN sobre o serviço prestado: 1 - Operação tributável; 2 - Exportação de serviço; 3 - Não Incidência; 4 - Imunidade;
+        - nBM [OBRIG] — Identificador do benefício parametrizado pelo município. Trata-se de um identificador único que foi gerado pelo Sistema Nacional no momento em que o m
+        [ESCOLHA UM (obrigatório)]
+          - vRedBCBM [opção] — Valor monetário informado pelo emitente para redução da base de cálculo (BC) do ISSQN devido a um Benefício Municipal (BM).
+          - pRedBCBM [opção] — Valor percentual informado pelo emitente para redução da base de cálculo (BC) do ISSQN devido a um Benefício Municipal (BM).
+      - tpRetISSQN [OBRIG] — Tipo de retencao do ISSQN: 1 - Não Retido; 2 - Retido pelo Tomador; 3 - Retido pelo Intermediario;
+      - pAliq [opc] — Valor da alíquota (%) do serviço prestado relativo ao município sujeito ativo (município de incidência) do ISSQN. Se o município de incidência pertenc
+    - tribFed [opc] — Grupo de informações de outros tributos relacionados ao serviço prestado
+      - piscofins [opc] — Grupo de informações dos tributos PIS/COFINS
+        - CST [OBRIG] — Código de Situação Tributária do PIS/COFINS (CST): 00 - Nenhum; 01 - Operação Tributável com Alíquota Básica; 02 - Operação Tributável com Alíquota Di
+        - vBCPisCofins [opc] — Valor da Base de Cálculo do PIS/COFINS, relativo à apuração própria (R$).
+        - pAliqPis [opc] — Alíquota do PIS, relativa à apuração própria (%).
+        - pAliqCofins [opc] — Alíquota da COFINS, relativa à apuração própria (%).
+        - vPis [opc] — Valor do débito de PIS apuração própria (R$).
+        - vCofins [opc] — Valor do débito de COFINS apuração própria (R$).
+        - tpRetPisCofins [opc] — Tipo de retenção do PIS/COFINS: 0 - PIS/COFINS/CSLL Não Retidos; 1 - PIS/COFINS Retidos; 2 - PIS/COFINS Não Retidos; 3 - PIS/COFINS/CSLL Retidos; 4 - 
+      - vRetCP [opc] — Valor monetário do CP(R$).
+      - vRetIRRF [opc] — Valor monetário do IRRF (R$).
+      - vRetCSLL [opc] — Valor monetário do CSLL (R$).
+    - totTrib [OBRIG] — Grupo de informações para totais aproximados dos tributos relacionados ao serviço prestado
+      [ESCOLHA UM (obrigatório)]
+        - vTotTrib [opção] — Valor monetário total aproximado dos tributos, em conformidade com o artigo 1o da Lei no 12.741/2012
+          - vTotTribFed [OBRIG] — Valor monetário total aproximado dos tributos federais (R$).
+          - vTotTribEst [OBRIG] — Valor monetário total aproximado dos tributos estaduais (R$).
+          - vTotTribMun [OBRIG] — Valor monetário total aproximado dos tributos municipais (R$).
+        - pTotTrib [opção] — Valor percentual total aproximado dos tributos, em conformidade com o artigo 1o da Lei no 12.741/2012
+          - pTotTribFed [OBRIG] — Valor percentual total aproximado dos tributos federais (%).
+          - pTotTribEst [OBRIG] — Valor percentual total aproximado dos tributos estaduais (%).
+          - pTotTribMun [OBRIG] — Valor percentual total aproximado dos tributos municipais (%).
+        - indTotTrib [opção] — Indicador de informação de valor total de tributos. Possui valor fixo igual a zero (indTotTrib=0). Não informar nenhum valor estimado para os Tributos
+        - pTotTribSN [opção] — Valor percentual aproximado do total dos tributos da alíquota do Simples Nacional (%)
+- IBSCBS [opc] — Grupo de informações declaradas pelo emitente referentes ao IBS e à CBS
+  - finNFSe [OBRIG] — Indicador da finalidade da emissão de NFS-e
+  - indFinal [opc] — Indica operação de uso ou consumo pessoal (art. 57)
+  - cIndOp [OBRIG] — Código indicador da operação de fornecimento, conforme tabela "código indicador de operação"
+  - tpOper [opc] — Tipo de Operação com Entes Governamentais ou outros serviços sobre bens imóveis
+  - gRefNFSe [opc] — Grupo de NFS-e referenciadas
+    - refNFSe [OBRIG] (até 99) — Chave da NFS-e referenciada
+  - tpEnteGov [opc] — Tipo de ente governamental
+  - indDest [OBRIG] — A respeito do Destinatário dos serviços
+  - dest [opc] — Grupo de informações relativas ao Destinatário
+    [ESCOLHA UM (obrigatório)]
+      - CNPJ [opção] — Número da inscrição no Cadastro Nacional de Pessoa Jurídica (CNPJ) do Destinatário do serviço
+      - CPF [opção] — Número da inscrição no Cadastro de Pessoa Física (CPF) do Destinatário do serviço
+      - NIF [opção] — Número de Identificação Fiscal fornecido por órgão de administração tributária no exterior
+      - cNaoNIF [opção] — Motivo para não informação do NIF: 0 - Não informado na nota de origem; 1 - Dispensado do NIF; 2 - Não exigência do NIF;
+    - xNome [OBRIG] — Nome / Nome Empresarial do do Destinatário do serviço
+    - end [opc] — Grupo de informações do endereço do Destinatário do serviço
+      [ESCOLHA UM (obrigatório)]
+        - endNac [opção] — Grupo de informações específicas de endereço nacional
+          - cMun [OBRIG] — Código do município, conforme Tabela do IBGE
+          - CEP [OBRIG] — Número do CEP
+        - endExt [opção] — Grupo de informações específicas de endereço no exterior
+          - cPais [OBRIG] — Código do país (Tabela de Países ISO)
+          - cEndPost [OBRIG] — Código alfanumérico do Endereçamento Postal no exterior do prestador do serviço.
+          - xCidade [OBRIG] — Nome da cidade no exterior do prestador do serviço.
+          - xEstProvReg [OBRIG] — Estado, província ou região da cidade no exterior do prestador do serviço.
+      - xLgr [OBRIG] — Tipo e nome do logradouro da localização do imóvel
+      - nro [OBRIG] — Número do imóvel
+      - xCpl [opc] — Complemento do endereço
+      - xBairro [OBRIG] — Bairro
+    - fone [opc] — Número do telefone do Destinatário do serviço (Preencher com o Código DDD + número do telefone. Nas operações com exterior é permitido informar o códi
+    - email [opc] — E-mail do Destinatário do serviço
+  - imovel [opc] — Grupo de informações de operações relacionadas a bens imóveis, exceto obras
+    - inscImobFisc [opc] — Inscrição imobiliária fiscal (código fornecido pela Prefeitura Municipal para a identificação da obra ou para fins de recolhimento do IPTU)
+    [ESCOLHA UM (obrigatório)]
+      - cCIB [opção] — Código do Cadastro Imobiliário Brasileiro - CIB
+      - end [opção] — Grupo de informações do endereço da obra do serviço prestado
+        [ESCOLHA UM (obrigatório)]
+          - CEP [opção] — Número do CEP
+          - endExt [opção] — Grupo de informações específicas de endereço no exterior
+            - cEndPost [OBRIG] — Código alfanumérico do Endereçamento Postal no exterior do prestador do serviço.
+            - xCidade [OBRIG] — Nome da cidade no exterior do prestador do serviço.
+            - xEstProvReg [OBRIG] — Estado, província ou região da cidade no exterior do prestador do serviço.
+        - xLgr [OBRIG] — Tipo e nome do logradouro da localização do imóvel
+        - nro [OBRIG] — Número do imóvel
+        - xCpl [opc] — Complemento do endereço
+        - xBairro [OBRIG] — Bairro
+  - valores [OBRIG] — Grupo de informações relativas aos valores do serviço prestado para IBS e CBS
+    - gReeRepRes [opc] — Grupo de informações relativas a valores incluídos neste documento e recebidos por motivo de estarem relacionadas a operações de terceiros, objeto de 
+      - documentos [OBRIG] (até 1000) — Grupo relativo aos documentos referenciados nos casos de reembolso, repasse e ressarcimento que serão considerados na base de cálculo do ISSQN, do IBS
+        [ESCOLHA UM (obrigatório)]
+          - dFeNacional [opção] — Grupo de informações de documentos fiscais eletrônicos que se encontram no repositório nacional
+            - tipoChaveDFe [OBRIG] — Documento fiscal a que se refere a chaveDfe que seja um dos documentos do Repositório Nacional
+            - xTipoChaveDFe [opc] — Descrição da DF-e a que se refere a chaveDfe que seja um dos documentos do Repositório Nacional Deve ser preenchido apenas quando "tipoChaveDFe = 9 (O
+            - chaveDFe [OBRIG] — Chave do Documento Fiscal eletrônico do repositório nacional referenciado para os casos de operações já tributadas
+          - docFiscalOutro [opção] — Grupo de informações de documento fiscais, eletrônicos ou não, que não se encontram no repositório nacional
+            - cMunDocFiscal [OBRIG] — Código do município emissor do documento fiscal que não se encontra no repositório nacional
+            - nDocFiscal [OBRIG] — Número do documento fiscal que não se encontra no repositório nacional
+            - xDocFiscal [OBRIG] — Descrição do documento fiscal
+          - docOutro [opção] — Grupo de informações de documento não fiscal.
+            - nDoc [OBRIG] — Número do documento não fiscal
+            - xDoc [OBRIG] — Descrição do documento não fiscal
+        - fornec [opc] — Grupo de informações do fornecedor do documento referenciado
+          [ESCOLHA UM (obrigatório)]
+            - CNPJ [opção] — Número da inscrição no Cadastro Nacional de Pessoa Jurídica (CNPJ) do Fornecedor do serviço
+            - CPF [opção] — Número da inscrição no Cadastro de Pessoa Física (CPF) do Fornecedor do serviço
+            - NIF [opção] — Este elemento só deverá ser preenchido para fornecedores não residentes no Brasil
+            - cNaoNIF [opção] — Motivo para não informação do NIF: 0 - Não informado na nota de origem; 1 - Dispensado do NIF; 2 - Não exigência do NIF;
+          - xNome [OBRIG] — Nome / Razão Social do do Fornecedor do serviço
+        - dtEmiDoc [OBRIG] — Data da emissão do documento dedutível Ano, mês e dia (AAAA-MM-DD)
+        - dtCompDoc [OBRIG] — Data da competência do documento dedutível Ano, mês e dia (AAAA-MM-DD)
+        - tpReeRepRes [OBRIG] — Tipo de valor incluído neste documento, recebido por motivo de estarem relacionadas a operações de terceiros, objeto de reembolso, repasse ou ressarci
+        - xTpReeRepRes [opc] — Descrição do reembolso ou ressarcimento quando a opção é "99 – Outros reembolsos ou ressarcimentos recebidos por valores pagos relativos a operações p
+        - vlrReeRepRes [OBRIG] — Valor monetário (total ou parcial, conforme documento informado) utilizado para não inclusão na base de cálculo do ISS e do IBS e da CBS da NFS-e que 
+    - trib [OBRIG] — Grupo de informações relacionados aos tributos IBS e CBS
+      - gIBSCBS [OBRIG] — Grupo de informações relacionadas ao IBS e à CBS
+        - CST [OBRIG] — Código de Situação Tributária do IBS e da CBS
+        - cClassTrib [OBRIG] — Código de Classificação Tributária do IBS e da CBS
+        - cCredPres [opc] — Código e Classificação do Crédito Presumido: IBS e CBS
+        - gTribRegular [opc] — Grupo de informações da Tributação Regular
+          - CSTReg [OBRIG] — Código de Situação Tributária do IBS e da CBS de tributação regular
+          - cClassTribReg [OBRIG] — Código da Classificação Tributária do IBS e da CBS de tributação regular
+        - gDif [opc] — Grupo de informações relacionadas ao diferimento para IBS e CBS
+          - pDifUF [OBRIG] — Percentual de diferimento para o IBS estadual
+          - pDifMun [OBRIG] — Percentual de diferimento para o IBS municipal
+          - pDifCBS [OBRIG] — Percentual de diferimento para a CBS
+```

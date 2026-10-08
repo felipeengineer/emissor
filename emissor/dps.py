@@ -64,6 +64,15 @@ class DadosDPS:
             raise ErroValidacao("ambiente deve ser 1 (produção) ou 2 (homologação)")
         if self.servico.retencao_iss != RetencaoISS.NAO_RETIDO and not self.tomador:
             raise ErroValidacao("ISS retido exige a identificação do tomador")
+        # E0235: emitida pelo prestador, tomador com CNPJ exige endereço nacional.
+        if self.tomador and len(self.tomador.documento) == 14 and not self.tomador.endereco:
+            raise ErroValidacao("Tomador com CNPJ exige endereço (regra E0235 da NFS-e Nacional)")
+        # E0712: ME/EPP não pode usar indTotTrib; precisa informar o percentual do Simples (pTotTribSN).
+        if self.prestador.opcao_simples == OpcaoSimplesNacional.ME_EPP and self.servico.aliquota_simples is None:
+            raise ErroValidacao(
+                "ME/EPP deve informar a alíquota efetiva do Simples Nacional (pTotTribSN, regra E0712); "
+                "use a calculadora em Configurações para estimá-la"
+            )
 
 
 def agora_brasilia() -> datetime:
@@ -187,10 +196,10 @@ def montar_dps(dados: DadosDPS) -> etree._Element:
 
     # Optantes do SN: PIS/COFINS/IRPJ/CSLL/CPP são recolhidos no DAS, então não há grupo tribFed.
     tot = _sub(trib, "totTrib")
-    if p.opcao_simples == OpcaoSimplesNacional.ME_EPP and s.aliquota_simples is not None:
-        _sub(tot, "pTotTribSN", formatar_decimal(s.aliquota_simples))
+    if p.opcao_simples == OpcaoSimplesNacional.ME_EPP:
+        _sub(tot, "pTotTribSN", formatar_decimal(s.aliquota_simples))  # indTotTrib proibido (E0712)
     else:
-        _sub(tot, "indTotTrib", 0)  # 0 = não informar valor estimado de tributos
+        _sub(tot, "indTotTrib", 0)  # MEI: pTotTribSN proibido (E0710)
 
     return raiz
 
