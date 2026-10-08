@@ -125,3 +125,12 @@ Os testes geram um certificado autoassinado e simulam a SEFIN; nada é enviado a
 - A calculadora do Simples é uma estimativa; confirme o enquadramento com seu contador.
 - A senha do certificado salva pela interface fica no banco local; em máquinas compartilhadas, prefira
   `EMISSOR_CERT_SENHA`.
+
+## Licença
+
+O código é aberto para leitura, estudo e uso não comercial sob a
+[PolyForm Noncommercial License 1.0.0](LICENSE).
+
+**Uso comercial requer licença paga: US$ 100 por assento, por ano.** Isso inclui emitir notas de
+qualquer empresa ou MEI (inclusive a sua), incorporar o código em produtos ou serviços e atender
+terceiros com ele. Veja os termos e como adquirir em [LICENCA-COMERCIAL.md](LICENCA-COMERCIAL.md).

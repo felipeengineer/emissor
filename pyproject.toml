@@ -7,6 +7,7 @@ name = "emissor-nfse"
 version = "0.1.0"
 description = "Emissor de NFS-e no Sistema Nacional (Padrão Nacional) para empresas do Simples Nacional, com interface web e MCP server."
 readme = "README.md"
+license = { text = "PolyForm-Noncommercial-1.0.0; uso comercial requer licença comercial (LICENCA-COMERCIAL.md)" }
 requires-python = ">=3.10"
 dependencies = [
     "lxml>=5",
