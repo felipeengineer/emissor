@@ -24,7 +24,7 @@ from .modelos import (
 )
 
 NS = "http://www.sped.fazenda.gov.br/nfse"
-VERSAO_LEIAUTE = "1.00"
+VERSAO_LEIAUTE = "1.01"  # vigente desde 01/01/2026
 
 AMBIENTE_PRODUCAO = 1
 AMBIENTE_HOMOLOGACAO = 2  # "produção restrita"
@@ -67,8 +67,9 @@ class DadosDPS:
 
 
 def agora_brasilia() -> datetime:
-    # A SEFIN rejeita dhEmi no futuro; recuamos alguns segundos por segurança contra desvio de relógio.
-    return (datetime.now(ZoneInfo("America/Sao_Paulo")) - timedelta(seconds=30)).replace(microsecond=0)
+    # A SEFIN rejeita (E0008) dhEmi posterior ao seu horário de processamento; recuamos 60s contra
+    # desvio de relógio.
+    return (datetime.now(ZoneInfo("America/Sao_Paulo")) - timedelta(seconds=60)).replace(microsecond=0)
 
 
 def id_dps(prestador: Prestador, serie: str, numero: int) -> str:
@@ -178,6 +179,8 @@ def montar_dps(dados: DadosDPS) -> etree._Element:
     trib = _sub(valores, "trib")
     mun = _sub(trib, "tribMun")
     _sub(mun, "tribISSQN", 1)  # 1 = operação tributável
+    # Ordem no XSD 1.01: tribISSQN → cPaisResult? → tpImunidade? → exigSusp? → BM? → tpRetISSQN → pAliq?
+    # (no 1.00 o pAliq vinha antes do tpRetISSQN).
     _sub(mun, "tpRetISSQN", int(s.retencao_iss))
     if s.aliquota_iss is not None and p.opcao_simples == OpcaoSimplesNacional.ME_EPP:
         _sub(mun, "pAliq", formatar_decimal(s.aliquota_iss))
@@ -199,7 +202,6 @@ def montar_pedido_cancelamento(
     codigo_motivo: int,
     justificativa: str,
     ambiente: int,
-    numero_pedido: int = 1,
     data_evento: datetime | None = None,
     versao: str = VERSAO_LEIAUTE,
 ) -> etree._Element:
@@ -218,13 +220,12 @@ def montar_pedido_cancelamento(
     raiz = etree.Element(f"{{{NS}}}pedRegEvento", nsmap={None: NS})
     raiz.set("versao", versao)
     inf = _sub(raiz, "infPedReg")
-    inf.set("Id", f"PRE{chave}{TP_EVENTO_CANCELAMENTO}{int(numero_pedido):03d}")
+    inf.set("Id", f"PRE{chave}{TP_EVENTO_CANCELAMENTO}")  # TSIdEvento: "PRE" + chave(50) + tpEvento(6)
     _sub(inf, "tpAmb", ambiente)
     _sub(inf, "verAplic", VERSAO_APLICATIVO)
     _sub(inf, "dhEvento", dh.isoformat(timespec="seconds"))
     _sub(inf, "CNPJAutor" if len(doc) == 14 else "CPFAutor", doc)
     _sub(inf, "chNFSe", chave)
-    _sub(inf, "nPedRegEvento", int(numero_pedido))
     ev = _sub(inf, "e" + TP_EVENTO_CANCELAMENTO)
     _sub(ev, "xDesc", "Cancelamento de NFS-e")
     _sub(ev, "cMotivo", codigo_motivo)

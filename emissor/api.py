@@ -85,7 +85,10 @@ class ClienteSefin:
             return corpo
         erros: list[dict[str, Any]] = []
         if isinstance(corpo, dict):
-            erros = corpo.get("erros") or corpo.get("Erros") or []
+            # A SEFIN usa "erros" ou "erro" (singular na emissão e no evento), com lista ou objeto.
+            erros = corpo.get("erros") or corpo.get("Erros") or corpo.get("erro") or corpo.get("Erro") or []
+            if isinstance(erros, dict):
+                erros = [erros]
             if not erros and (corpo.get("mensagem") or corpo.get("message")):
                 erros = [{"Descricao": corpo.get("mensagem") or corpo.get("message")}]
         elif resp.text:

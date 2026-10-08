@@ -172,7 +172,7 @@ class Servico:
     codigo_tributacao_municipal: str = ""  # cTribMun (3 dígitos), opcional
     codigo_nbs: str = ""  # cNBS, opcional
     retencao_iss: RetencaoISS = RetencaoISS.NAO_RETIDO
-    aliquota_iss: Decimal | None = None  # pAliq (%), ME/EPP; deixe vazio p/ o sistema usar a do município
+    aliquota_iss: Decimal | None = None  # pAliq (%), ME/EPP; só p/ município fora do Sistema Nacional (nos conveniados o sistema preenche)
     aliquota_simples: Decimal | None = None  # pTotTribSN (%), alíquota efetiva do SN (ME/EPP)
     desconto_incondicionado: Decimal = field(default_factory=lambda: Decimal("0"))
 

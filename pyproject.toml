@@ -28,6 +28,7 @@ include = ["emissor*"]
 
 [tool.setuptools.package-data]
 "emissor.web" = ["templates/*.html", "static/*"]
+"emissor" = ["schemas/*/*.xsd", "schemas/*/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

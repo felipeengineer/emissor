@@ -37,7 +37,7 @@
           <option value="3" {% if ret == '3' %}selected{% endif %}>Retido pelo intermediário</option>
         </select>
       </div>
-      <div><label for="aliquota_iss">Alíquota ISS (%)</label><input id="aliquota_iss" name="aliquota_iss" inputmode="decimal" value="{{ form.get('aliquota_iss', padrao.get('aliquota_iss', '')) }}"></div>
+      <div><label for="aliquota_iss">Alíquota ISS (%) — só p/ município não conveniado</label><input id="aliquota_iss" name="aliquota_iss" inputmode="decimal" value="{{ form.get('aliquota_iss', padrao.get('aliquota_iss', '')) }}"></div>
       <div><label for="aliquota_simples">Alíquota efetiva SN (%)</label><input id="aliquota_simples" name="aliquota_simples" inputmode="decimal" value="{{ form.get('aliquota_simples', padrao.get('aliquota_simples', '')) }}"></div>
     </div>
     <div class="acoes">
@@ -49,6 +49,11 @@
 {% if preview %}
 <div class="card">
   <h2>Pré-visualização · {{ preview.id_dps }}</h2>
+  {% if preview.erros_esquema %}
+  <div class="flash erro">O XML não confere com o esquema oficial:<ul>{% for e in preview.erros_esquema %}<li>{{ e }}</li>{% endfor %}</ul></div>
+  {% else %}
+  <div class="flash ok">XML válido segundo o esquema oficial da NFS-e Nacional (leiaute {{ preview.versao }}).</div>
+  {% endif %}
   <p class="sutil">XML ainda não assinado. O número da DPS só é reservado na emissão.</p>
   <pre>{{ preview.xml }}</pre>
 </div>

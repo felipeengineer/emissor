@@ -34,6 +34,7 @@ from .modelos import (
     somente_digitos,
     validar_documento,
 )
+from .xsd import erros_esquema, validar_esquema
 
 STATUS_PENDENTE = "pendente"
 STATUS_EMITIDA = "emitida"
@@ -253,22 +254,32 @@ class Emissor:
         serv, competencia = self._montar_servico(servico, prestador)
         numero = self.banco.ultimo_numero(self.ambiente, self.serie) + 1
         dados = DadosDPS(prestador, self._resolver_tomador(tomador), serv, self.serie, numero, self.ambiente, competencia=competencia)
-        xml = para_bytes(montar_dps(dados)).decode()
-        return {"id_dps": id_dps(prestador, self.serie, numero), "numero_dps": numero, "ambiente": self.ambiente, "xml": xml}
+        dps = montar_dps(dados)
+        return {
+            "id_dps": id_dps(prestador, self.serie, numero),
+            "numero_dps": numero,
+            "ambiente": self.ambiente,
+            "versao": dps.get("versao"),
+            "erros_esquema": erros_esquema(dps, "DPS"),
+            "xml": para_bytes(dps).decode(),
+        }
 
     def emitir(self, tomador: dict | str | None, servico: dict) -> dict:
         """Valida, assina, envia a DPS à SEFIN Nacional e registra o resultado localmente."""
         prestador = self.prestador()
         tom = self._resolver_tomador(tomador)
         serv, competencia = self._montar_servico(servico, prestador)
-        # Valida antes de reservar número para não "queimar" nDPS com dados inválidos.
-        DadosDPS(prestador, tom, serv, self.serie, 1, self.ambiente, competencia=competencia).validar()
+        # Valida (regras e XSD oficial) antes de reservar número para não "queimar" nDPS com dados inválidos.
+        ambiente, serie = self.ambiente, self.serie
+        teste = DadosDPS(prestador, tom, serv, serie, self.banco.ultimo_numero(ambiente, serie) + 1, ambiente, competencia=competencia)
+        validar_esquema(montar_dps(teste), "DPS")
         cert = self.certificado()
 
-        ambiente, serie = self.ambiente, self.serie
         numero = self.banco.proximo_numero_dps(ambiente, serie)
         dados = DadosDPS(prestador, tom, serv, serie, numero, ambiente, competencia=competencia)
-        xml_assinado = para_bytes(assinar(montar_dps(dados), cert))
+        dps = assinar(montar_dps(dados), cert)
+        validar_esquema(dps, "DPS")
+        xml_assinado = para_bytes(dps)
         ident = id_dps(prestador, serie, numero)
 
         nota_id = self.banco.criar_nota(
@@ -365,7 +376,9 @@ class Emissor:
             justificativa=justificativa,
             ambiente=nota["ambiente"],
         )
-        xml = para_bytes(assinar(pedido, cert))
+        pedido = assinar(pedido, cert)
+        validar_esquema(pedido, "pedRegEvento")
+        xml = para_bytes(pedido)
         cliente = self._fabrica_cliente(cert, nota["ambiente"])
         try:
             cliente.registrar_evento(nota["chave_acesso"], xml)

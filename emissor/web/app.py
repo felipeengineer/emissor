@@ -245,9 +245,11 @@ def criar_app(emissor: Emissor | None = None) -> Flask:
                     calculo = calcular_aliquotas(f.get("rbt12", "0").replace(",", "."), anexo)
                     if f.get("aplicar"):
                         padrao = emissor.configuracao()["servico_padrao"]
-                        padrao.update(aliquota_simples=calculo["aliquota_efetiva"], aliquota_iss=calculo["aliquota_iss"])
+                        # Só a alíquota efetiva (pTotTribSN). O pAliq do ISS é preenchido pelo próprio
+                        # Sistema Nacional quando o município é conveniado.
+                        padrao.update(aliquota_simples=calculo["aliquota_efetiva"])
                         emissor.salvar_parametros(servico_padrao=padrao)
-                        flash("Alíquotas aplicadas ao serviço padrão.", "ok")
+                        flash("Alíquota efetiva aplicada ao serviço padrão.", "ok")
                 if secao != "calculadora":
                     return redirect(url_for("configuracoes"))
             except ERROS_DE_NEGOCIO as e:

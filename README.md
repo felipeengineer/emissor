@@ -10,14 +10,18 @@ sobre a mesma base local (SQLite):
 
 ## Como funciona
 
-1. Monta o XML da **DPS** (Declaração de Prestação de Serviço) no leiaute nacional
-   (`http://www.sped.fazenda.gov.br/nfse`), com o grupo `regTrib` do Simples Nacional:
-   `opSimpNac` (2 = MEI, 3 = ME/EPP), `regApTribSN` e, para ME/EPP, `pTotTribSN` (alíquota efetiva do SN)
-   e `pAliq` (ISS). Optantes do SN não informam tributos federais (`tribFed`), que vão no DAS.
-2. Assina a DPS (XMLDSig enveloped, RSA-SHA1, C14N) com o **certificado A1 ICP-Brasil** (.pfx).
-3. Envia à **API da SEFIN Nacional** (`POST /nfse`, XML em GZip+Base64) com TLS mútuo usando o mesmo certificado.
-4. Guarda a chave de acesso, o número e o XML da NFS-e; baixa o **DANFSe** (PDF) pelo ADN.
-5. Cancela via evento `e101101` (`POST /nfse/{chave}/eventos`).
+1. Monta o XML da **DPS** (Declaração de Prestação de Serviço) no **leiaute nacional 1.01**
+   (vigente desde 01/01/2026), com o grupo `regTrib` do Simples Nacional:
+   `opSimpNac` (2 = MEI, 3 = ME/EPP), `regApTribSN` e, para ME/EPP, `pTotTribSN` (alíquota efetiva do SN).
+   MEI usa `indTotTrib = 0`. Optantes do SN não informam tributos federais (`tribFed`), que vão no DAS.
+   A alíquota de ISS (`pAliq`) só deve ser informada quando o município de incidência **não** é conveniado
+   ao Sistema Nacional; nos conveniados, o próprio sistema a preenche.
+2. **Valida o XML contra os esquemas XSD oficiais** (em `emissor/schemas/1.01`) antes de enviar; a
+   pré-visualização mostra o resultado dessa validação.
+3. Assina a DPS (XMLDSig enveloped, RSA-SHA1, C14N) com o **certificado A1 ICP-Brasil** (.pfx).
+4. Envia à **API da SEFIN Nacional** (`POST /nfse`, XML em GZip+Base64) com TLS mútuo usando o mesmo certificado.
+5. Guarda a chave de acesso, o número e o XML da NFS-e; baixa o **DANFSe** (PDF) pelo ADN.
+6. Cancela via evento `e101101` (`POST /nfse/{chave}/eventos`).
 
 | Ambiente | SEFIN | ADN (DANFSe) |
 |---|---|---|
@@ -45,8 +49,8 @@ Em **Configurações**:
    A empresa precisa estar habilitada no Emissor Nacional (o município tem de ter aderido ao convênio).
 2. **Certificado A1**: envie o `.pfx` e a senha (ou use `EMISSOR_CERT_PFX` e `EMISSOR_CERT_SENHA`).
 3. **Serviço padrão**: código de tributação nacional (`cTribNac`, 6 dígitos — item, subitem e desdobro da
-   LC 116; ex.: `010701`), descrição e alíquotas. A **calculadora do Simples** estima a alíquota efetiva e a
-   parcela de ISS pelos Anexos III, IV e V (com fator R) a partir da receita dos últimos 12 meses.
+   LC 116; ex.: `010701`), descrição e alíquota efetiva do SN. A **calculadora do Simples** estima a alíquota
+   efetiva e a parcela de ISS pelos Anexos III, IV e V (com fator R) a partir da receita dos últimos 12 meses.
 4. **Ambiente e numeração**: comece em homologação. Se já emitiu DPS por outro sistema, informe o último
    número usado na série para continuar a sequência.
 
@@ -114,13 +118,20 @@ pelo suporte técnico de setembro."*
 pytest
 ```
 
-Os testes geram um certificado autoassinado e simulam a SEFIN; nada é enviado ao governo.
+Os testes geram um certificado autoassinado e simulam a SEFIN; nada é enviado ao governo. Todos os
+cenários de DPS (ME/EPP, MEI, com e sem tomador) e o pedido de cancelamento são validados contra os XSDs
+oficiais do leiaute 1.01.
 
 ## Limitações e cuidados
 
-- Leiaute da DPS **v1.00**. Valide em homologação antes de ir para produção; regras específicas do seu
-  município (códigos de tributação municipal, alíquotas mínimas) podem gerar rejeições que exigem ajuste.
-- Grupos de IBS/CBS da reforma tributária ainda não são preenchidos.
+- **Ainda não testado contra a SEFIN real.** O XML confere com os esquemas oficiais, mas a SEFIN aplica
+  regras de negócio além do esquema (cadastro do contribuinte, parametrização do município, códigos de
+  tributação). Emita primeiro em homologação.
+- Grupo IBS/CBS da reforma tributária (opcional no leiaute 1.01) ainda não é preenchido.
+- CNPJ alfanumérico (emitido a partir de julho/2026) ainda não é aceito: o próprio esquema 1.01 da
+  NFS-e Nacional exige CNPJ com 14 dígitos numéricos.
+- Uma nota cancelada continua sendo devolvida pela consulta da SEFIN como autorizada; o cancelamento é
+  um evento à parte. O app registra o cancelamento localmente quando o evento é aceito.
 - Tomador no exterior, intermediário, deduções/reduções e substituição de NFS-e ainda não são suportados.
 - A calculadora do Simples é uma estimativa; confirme o enquadramento com seu contador.
 - A senha do certificado salva pela interface fica no banco local; em máquinas compartilhadas, prefira

@@ -57,7 +57,7 @@ class ServicoIn(BaseModel):
     codigo_tributacao_municipal: str = ""
     codigo_nbs: str = ""
     retencao_iss: Literal[1, 2, 3] = Field(1, description="1=não retido, 2=retido pelo tomador, 3=retido pelo intermediário")
-    aliquota_iss: str | None = Field(None, description="pAliq % (ME/EPP). Vazio = padrão configurado")
+    aliquota_iss: str | None = Field(None, description="pAliq % (ME/EPP). Deixe vazio: o Sistema Nacional preenche a alíquota quando o município de incidência é conveniado; informe só para município fora do sistema")
     aliquota_simples: str | None = Field(None, description="pTotTribSN: alíquota efetiva do SN % (ME/EPP)")
     desconto_incondicionado: str = "0"
     competencia: str = Field("", description="Data de competência AAAA-MM-DD (padrão: hoje)")
@@ -115,7 +115,7 @@ def criar_servidor(emissor: Emissor | None = None) -> MCPServer:
     def calcular_aliquota_simples(
         rbt12: str, anexo: Literal["III", "IV", "V"] | None = None, folha_12_meses: str | None = None
     ) -> dict:
-        """Estima a alíquota efetiva do Simples Nacional (pTotTribSN) e a parcela de ISS (pAliq) a partir da
+        """Estima a alíquota efetiva do Simples Nacional (pTotTribSN) e a parcela de ISS (informativa) a partir da
         receita bruta dos últimos 12 meses. Se informar a folha de 12 meses sem anexo, aplica o fator R (III ou V)."""
         if anexo is None:
             anexo = anexo_por_fator_r(folha_12_meses, rbt12) if folha_12_meses else "III"

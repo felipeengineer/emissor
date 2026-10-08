@@ -5,7 +5,9 @@ from zoneinfo import ZoneInfo
 import pytest
 from lxml import etree
 
+from emissor.api import ClienteSefin, ErroSefin
 from emissor.assinatura import Certificado, assinar, verificar_assinatura
+from emissor.xsd import erros_esquema
 from emissor.dps import NS, DadosDPS, id_dps, montar_dps, montar_pedido_cancelamento, para_bytes
 from emissor.modelos import (
     Endereco,
@@ -62,7 +64,7 @@ def test_montar_dps_me_epp():
     )
     raiz = montar_dps(DadosDPS(prestador(), tom, servico(aliquota_iss="2.01"), "1", 27, data_emissao=dh))
     inf = raiz.find("n:infDPS", N)
-    assert raiz.get("versao") == "1.00"
+    assert raiz.get("versao") == "1.01"
     assert inf.findtext("n:dhEmi", namespaces=N) == "2026-10-08T10:00:00-03:00"
     assert inf.findtext("n:nDPS", namespaces=N) == "27"
     assert inf.findtext("n:prest/n:CNPJ", namespaces=N) == "11222333000181"
@@ -73,6 +75,8 @@ def test_montar_dps_me_epp():
     assert inf.findtext("n:toma/n:end/n:endNac/n:CEP", namespaces=N) == "01001000"
     assert inf.findtext("n:serv/n:cServ/n:cTribNac", namespaces=N) == "010701"
     assert inf.findtext("n:valores/n:vServPrest/n:vServ", namespaces=N) == "1500.50"
+    trib_mun = [etree.QName(e).localname for e in inf.find("n:valores/n:trib/n:tribMun", N)]
+    assert trib_mun == ["tribISSQN", "tpRetISSQN", "pAliq"]  # ordem do leiaute 1.01
     assert inf.findtext("n:valores/n:trib/n:tribMun/n:pAliq", namespaces=N) == "2.01"
     assert inf.findtext("n:valores/n:trib/n:totTrib/n:pTotTribSN", namespaces=N) == "6.00"
     assert inf.find("n:valores/n:trib/n:tribFed", N) is None
@@ -112,6 +116,38 @@ def test_iss_retido_exige_tomador():
         montar_dps(DadosDPS(prestador(), None, servico(retencao_iss=2), "1", 1))
 
 
+TOMADOR_COMPLETO = Tomador(
+    "52998224725",
+    "Fulano",
+    Endereco("3550308", "01001000", "Praça da Sé", "1", "Sé", "apto 2"),
+    email="f@example.com",
+    telefone="1133334444",
+    inscricao_municipal="999",
+)
+
+
+@pytest.mark.parametrize(
+    "prest, tom, serv",
+    [
+        # ME/EPP com todos os campos opcionais, ISS retido e desconto
+        (
+            prestador(inscricao_municipal="12345", telefone="11999999999", email="a@example.com"),
+            TOMADOR_COMPLETO,
+            servico(codigo_tributacao_municipal="001", codigo_nbs="123456789", retencao_iss=2,
+                    aliquota_iss="2.01", desconto_incondicionado="10"),
+        ),
+        (prestador(), None, servico(aliquota_simples=None)),  # sem tomador e sem alíquotas
+        (prestador(opcao_simples=OpcaoSimplesNacional.MEI), TOMADOR_COMPLETO, servico()),  # MEI
+        (prestador(documento="52998224725"), Tomador("11222333000181", "ACME"), servico()),  # prestador CPF, tomador CNPJ
+    ],
+)
+def test_dps_confere_com_xsd_oficial(pfx, prest, tom, serv):
+    raiz = montar_dps(DadosDPS(prest, tom, serv, "1", 27))
+    assert erros_esquema(raiz, "DPS") == []
+    assinado = etree.fromstring(para_bytes(assinar(raiz, Certificado.carregar_pfx(pfx, "1234"))))
+    assert erros_esquema(assinado, "DPS") == []
+
+
 def test_assinatura_valida_e_detecta_adulteracao(pfx):
     cert = Certificado.carregar_pfx(pfx, "1234")
     raiz = assinar(montar_dps(DadosDPS(prestador(), None, servico(), "1", 1)), cert)
@@ -131,8 +167,35 @@ def test_pedido_cancelamento(pfx):
         chave_acesso=chave, documento_autor="11222333000181", codigo_motivo=1, justificativa="Valor informado errado", ambiente=2
     )
     inf = raiz.find("n:infPedReg", N)
-    assert inf.get("Id") == f"PRE{chave}101101001"
+    assert inf.get("Id") == f"PRE{chave}101101"
     assert inf.findtext("n:e101101/n:cMotivo", namespaces=N) == "1"
-    assert verificar_assinatura(assinar(raiz, Certificado.carregar_pfx(pfx, "1234")))
+    assinado = assinar(raiz, Certificado.carregar_pfx(pfx, "1234"))
+    assert verificar_assinatura(assinado)
+    assert erros_esquema(etree.fromstring(para_bytes(assinado)), "pedRegEvento") == []
     with pytest.raises(ErroValidacao):
         montar_pedido_cancelamento(chave_acesso=chave, documento_autor="1", codigo_motivo=1, justificativa="curta", ambiente=2)
+
+
+class _Resposta:
+    def __init__(self, status, corpo):
+        import json as _json
+
+        self.status_code, self.ok, self._corpo = status, status < 400, corpo
+        self.text = _json.dumps(corpo)
+
+    def json(self):
+        return self._corpo
+
+
+@pytest.mark.parametrize(
+    "corpo",
+    [
+        {"erro": [{"Codigo": "E0008", "Descricao": "dhEmi posterior"}]},  # formato da emissão/evento
+        {"erro": {"codigo": "E0008", "descricao": "dhEmi posterior"}},
+        {"erros": [{"Codigo": "E0008", "Descricao": "dhEmi posterior"}]},
+    ],
+)
+def test_erros_da_sefin_sao_lidos(corpo):
+    with pytest.raises(ErroSefin) as exc:
+        ClienteSefin._json_ou_erro(_Resposta(400, corpo), "DPS rejeitada")
+    assert "E0008" in str(exc.value) and exc.value.status_http == 400
