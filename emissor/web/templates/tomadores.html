@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Tomadores{% endblock %}
+{% block conteudo %}
+<h1>Tomadores</h1>
+<div class="card">
+  <h2>{{ 'Editar' if editar else 'Novo' }} tomador</h2>
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    {% set t = editar %}{% include "_campos_tomador.html" %}
+    <div class="acoes"><button class="btn">Salvar</button>{% if editar %}<a class="btn sec" href="{{ url_for('tomadores') }}">Novo</a>{% endif %}</div>
+  </form>
+</div>
+<div class="card">
+  <form method="get" style="margin-bottom:12px"><input name="q" placeholder="Buscar por nome ou documento" value="{{ request.args.get('q', '') }}"></form>
+  <div class="tabela">
+  <table>
+    <thead><tr><th>Nome</th><th>Documento</th><th>E-mail</th><th></th></tr></thead>
+    <tbody>
+    {% for t in tomadores %}
+      <tr>
+        <td>{{ t.nome }}</td><td>{{ t.documento|doc }}</td><td>{{ t.email }}</td>
+        <td class="num">
+          <a href="{{ url_for('tomadores', editar=t.documento) }}">editar</a> ·
+          <form method="post" action="{{ url_for('excluir_tomador', documento=t.documento) }}" style="display:inline" onsubmit="return confirm('Excluir?')">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button style="all:unset;color:var(--erro);cursor:pointer">excluir</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4" class="sutil">Nenhum tomador cadastrado.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

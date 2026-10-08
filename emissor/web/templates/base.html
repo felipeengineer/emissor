@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Emissor NFS-e{% endblock %} · Emissor NFS-e</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="marca" href="{{ url_for('painel') }}">Emissor NFS-e · Simples Nacional</a>
+    <nav>
+      <a href="{{ url_for('nova_nota') }}">Nova NFS-e</a>
+      <a href="{{ url_for('notas') }}">Notas</a>
+      <a href="{{ url_for('tomadores') }}">Tomadores</a>
+      <a href="{{ url_for('configuracoes') }}">Configurações</a>
+    </nav>
+    {% if ambiente == 1 %}<span class="amb prod">PRODUÇÃO</span>{% else %}<span class="amb homolog">HOMOLOGAÇÃO</span>{% endif %}
+  </div>
+</header>
+<main class="wrap">
+  {% for cat, msg in get_flashed_messages(with_categories=true) %}
+    <div class="flash {{ cat }}">{{ msg }}</div>
+  {% endfor %}
+  {% block conteudo %}{% endblock %}
+</main>
+</body>
+</html>

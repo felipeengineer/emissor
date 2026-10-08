@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block titulo %}Configurações{% endblock %}
+{% block conteudo %}
+<h1>Configurações</h1>
+
+<div class="card">
+  <h2>Prestador (sua empresa)</h2>
+  <p class="sutil">Nome e endereço vêm do Cadastro Nacional da NFS-e; aqui ficam só os dados que vão na DPS.</p>
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="secao" value="prestador">
+    <div class="grid">
+      <div><label for="documento">CNPJ (ou CPF)</label><input id="documento" name="documento" required value="{{ prestador.documento or '' }}"></div>
+      <div class="wide"><label for="razao_social">Razão social</label><input id="razao_social" name="razao_social" value="{{ prestador.razao_social or '' }}"></div>
+      <div><label for="codigo_municipio">Município (código IBGE)</label><input id="codigo_municipio" name="codigo_municipio" required maxlength="7" value="{{ prestador.codigo_municipio or '' }}"></div>
+      <div><label for="inscricao_municipal">Inscrição municipal</label><input id="inscricao_municipal" name="inscricao_municipal" value="{{ prestador.inscricao_municipal or '' }}"></div>
+      <div><label for="opcao_simples">Situação no Simples Nacional</label>
+        <select id="opcao_simples" name="opcao_simples">
+          <option value="3" {% if prestador.opcao_simples != 2 %}selected{% endif %}>ME/EPP</option>
+          <option value="2" {% if prestador.opcao_simples == 2 %}selected{% endif %}>MEI</option>
+        </select>
+      </div>
+      <div><label for="regime_apuracao_sn">Apuração (ME/EPP)</label>
+        {% set r = prestador.regime_apuracao_sn or 1 %}
+        <select id="regime_apuracao_sn" name="regime_apuracao_sn">
+          <option value="1" {% if r == 1 %}selected{% endif %}>Federais e ISS pelo SN</option>
+          <option value="2" {% if r == 2 %}selected{% endif %}>Federais pelo SN, ISS fora (sublimite)</option>
+          <option value="3" {% if r == 3 %}selected{% endif %}>Federais e ISS fora do SN</option>
+        </select>
+      </div>
+      <div><label for="telefone">Telefone</label><input id="telefone" name="telefone" value="{{ prestador.telefone or '' }}"></div>
+      <div><label for="email">E-mail</label><input id="email" name="email" type="email" value="{{ prestador.email or '' }}"></div>
+    </div>
+    <div class="acoes"><button class="btn">Salvar prestador</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Certificado digital A1</h2>
+  <p class="sutil">Atual: {{ cfg.certificado_caminho or 'nenhum' }} · senha {{ 'definida' if cfg.certificado_senha_definida else 'não definida' }}.
+    Também é possível usar as variáveis EMISSOR_CERT_PFX e EMISSOR_CERT_SENHA.</p>
+  <form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="secao" value="certificado">
+    <div class="grid">
+      <div><label for="pfx">Arquivo .pfx / .p12</label><input id="pfx" name="pfx" type="file" accept=".pfx,.p12"></div>
+      <div><label for="senha">Senha</label><input id="senha" name="senha" type="password" autocomplete="off"></div>
+    </div>
+    <div class="acoes"><button class="btn">Salvar e testar certificado</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Ambiente e numeração</h2>
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="secao" value="parametros">
+    <div class="grid">
+      <div><label for="ambiente">Ambiente</label>
+        <select id="ambiente" name="ambiente">
+          <option value="2" {% if cfg.ambiente == 2 %}selected{% endif %}>Homologação (produção restrita)</option>
+          <option value="1" {% if cfg.ambiente == 1 %}selected{% endif %}>Produção</option>
+        </select>
+      </div>
+      <div><label for="serie">Série da DPS</label><input id="serie" name="serie" maxlength="5" value="{{ cfg.serie }}"></div>
+      <div><label for="ultimo_numero_dps">Último nº de DPS usado</label><input id="ultimo_numero_dps" name="ultimo_numero_dps" type="number" min="0" value="{{ ultimo }}"></div>
+    </div>
+    <div class="acoes"><button class="btn">Salvar</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Serviço padrão</h2>
+  <p class="sutil">Preenche automaticamente a emissão (pela tela ou pelo MCP).</p>
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="secao" value="servico_padrao">
+    <div class="grid">
+      <div class="wide"><label for="descricao">Descrição</label><textarea id="descricao" name="descricao">{{ padrao.descricao or '' }}</textarea></div>
+      <div><label for="codigo_tributacao_nacional">cTribNac (6 dígitos)</label><input id="codigo_tributacao_nacional" name="codigo_tributacao_nacional" maxlength="6" value="{{ padrao.codigo_tributacao_nacional or '' }}"></div>
+      <div><label for="codigo_tributacao_municipal">Cód. tributação municipal</label><input id="codigo_tributacao_municipal" name="codigo_tributacao_municipal" value="{{ padrao.codigo_tributacao_municipal or '' }}"></div>
+      <div><label for="codigo_nbs">NBS</label><input id="codigo_nbs" name="codigo_nbs" value="{{ padrao.codigo_nbs or '' }}"></div>
+      <div><label for="codigo_municipio_prestacao">Local da prestação (IBGE)</label><input id="codigo_municipio_prestacao" name="codigo_municipio_prestacao" value="{{ padrao.codigo_municipio_prestacao or '' }}"></div>
+      <div><label for="aliquota_iss">Alíquota ISS (%)</label><input id="aliquota_iss" name="aliquota_iss" value="{{ padrao.aliquota_iss or '' }}"></div>
+      <div><label for="aliquota_simples">Alíquota efetiva SN (%)</label><input id="aliquota_simples" name="aliquota_simples" value="{{ padrao.aliquota_simples or '' }}"></div>
+    </div>
+    <div class="acoes"><button class="btn">Salvar serviço padrão</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Calculadora do Simples Nacional</h2>
+  <p class="sutil">Estimativa da alíquota efetiva e da parcela de ISS (Anexos III, IV e V). Confirme com seu contador.</p>
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="secao" value="calculadora">
+    <div class="grid">
+      <div><label for="rbt12">Receita bruta 12 meses (R$)</label><input id="rbt12" name="rbt12" required inputmode="decimal" value="{{ request.form.get('rbt12', '') }}"></div>
+      <div><label for="anexo">Anexo</label>
+        <select id="anexo" name="anexo"><option value="">Fator R (III ou V)</option><option>III</option><option>IV</option><option>V</option></select>
+      </div>
+      <div><label for="folha">Folha 12 meses (p/ fator R)</label><input id="folha" name="folha" inputmode="decimal" value="{{ request.form.get('folha', '') }}"></div>
+    </div>
+    <div class="acoes"><button class="btn sec">Calcular</button><button class="btn" name="aplicar" value="1">Calcular e aplicar ao serviço padrão</button></div>
+  </form>
+  {% if calculo %}
+  <dl class="dados" style="margin-top:16px">
+    <dt>Anexo / faixa</dt><dd>{{ calculo.anexo }} / {{ calculo.faixa }}ª</dd>
+    <dt>Alíquota nominal</dt><dd>{{ calculo.aliquota_nominal }}%</dd>
+    <dt>Alíquota efetiva (pTotTribSN)</dt><dd><strong>{{ calculo.aliquota_efetiva }}%</strong></dd>
+    <dt>Parcela de ISS (pAliq)</dt><dd><strong>{{ calculo.aliquota_iss }}%</strong></dd>
+    {% if calculo.observacao %}<dt>Observação</dt><dd>{{ calculo.observacao }}</dd>{% endif %}
+  </dl>
+  {% endif %}
+</div>
+{% endblock %}

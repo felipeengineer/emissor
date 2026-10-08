@@ -1,0 +1,20 @@
+<div class="tabela">
+<table>
+  <thead><tr><th>#</th><th>NFS-e / DPS</th><th>Tomador</th><th>Descrição</th><th class="num">Valor</th><th>Situação</th><th>Data</th></tr></thead>
+  <tbody>
+  {% for n in notas %}
+    <tr>
+      <td><a href="{{ url_for('detalhe_nota', nota_id=n.id) }}">{{ n.id }}</a></td>
+      <td>{% if n.numero_nfse %}NFS-e {{ n.numero_nfse }}{% else %}<span class="sutil">DPS {{ n.serie }}/{{ n.numero_dps }}</span>{% endif %}</td>
+      <td>{{ n.tomador_nome or '—' }}<br><span class="sutil">{{ n.tomador_documento|doc }}</span></td>
+      <td>{{ n.descricao|truncate(60) }}</td>
+      <td class="num">{{ n.valor|moeda }}</td>
+      <td><span class="tag {{ n.status }}">{{ status_rotulos.get(n.status, n.status) }}</span></td>
+      <td class="sutil">{{ n.criado_em[:16]|replace('T', ' ') }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7" class="sutil">Nenhuma nota ainda.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
