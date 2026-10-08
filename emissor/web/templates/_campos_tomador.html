@@ -1,0 +1,14 @@
+{% set t = t or {} %}{% set e = t.endereco or {} %}
+<div class="grid">
+  <div><label for="tomador_documento">CPF/CNPJ</label><input id="tomador_documento" name="tomador_documento" value="{{ form.get('tomador_documento', t.documento or '') }}"></div>
+  <div class="wide"><label for="tomador_nome">Nome / razão social</label><input id="tomador_nome" name="tomador_nome" value="{{ form.get('tomador_nome', t.nome or '') }}"></div>
+  <div><label for="tomador_email">E-mail</label><input id="tomador_email" name="tomador_email" type="email" value="{{ form.get('tomador_email', t.email or '') }}"></div>
+  <div><label for="tomador_telefone">Telefone</label><input id="tomador_telefone" name="tomador_telefone" value="{{ form.get('tomador_telefone', t.telefone or '') }}"></div>
+  <div><label for="tomador_im">Inscrição municipal</label><input id="tomador_im" name="tomador_im" value="{{ form.get('tomador_im', t.inscricao_municipal or '') }}"></div>
+  <div><label for="tomador_cep">CEP</label><input id="tomador_cep" name="tomador_cep" value="{{ form.get('tomador_cep', e.cep or '') }}"></div>
+  <div><label for="tomador_municipio">Município (código IBGE)</label><input id="tomador_municipio" name="tomador_municipio" value="{{ form.get('tomador_municipio', e.codigo_municipio or '') }}"></div>
+  <div class="wide"><label for="tomador_logradouro">Logradouro</label><input id="tomador_logradouro" name="tomador_logradouro" value="{{ form.get('tomador_logradouro', e.logradouro or '') }}"></div>
+  <div><label for="tomador_numero">Número</label><input id="tomador_numero" name="tomador_numero" value="{{ form.get('tomador_numero', e.numero or '') }}"></div>
+  <div><label for="tomador_complemento">Complemento</label><input id="tomador_complemento" name="tomador_complemento" value="{{ form.get('tomador_complemento', e.complemento or '') }}"></div>
+  <div><label for="tomador_bairro">Bairro</label><input id="tomador_bairro" name="tomador_bairro" value="{{ form.get('tomador_bairro', e.bairro or '') }}"></div>
+</div>

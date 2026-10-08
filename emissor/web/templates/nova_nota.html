@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block titulo %}Nova NFS-e{% endblock %}
+{% block conteudo %}
+<h1>Nova NFS-e</h1>
+<form method="post">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="card">
+    <h2>Tomador</h2>
+    {% if tomadores %}
+    <div style="margin-bottom:14px">
+      <label for="sel_tomador">Cliente cadastrado</label>
+      <select id="sel_tomador">
+        <option value="">— preencher manualmente / sem tomador —</option>
+        {% for t in tomadores %}<option value="{{ loop.index0 }}">{{ t.nome }} ({{ t.documento|doc }})</option>{% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    {% set t = {} %}{% include "_campos_tomador.html" %}
+    <p class="sutil">Deixe o CPF/CNPJ em branco para tomador não identificado. Endereço é opcional para tomador nacional.</p>
+  </div>
+  <div class="card">
+    <h2>Serviço</h2>
+    <div class="grid">
+      <div class="wide"><label for="descricao">Descrição do serviço</label><textarea id="descricao" name="descricao" maxlength="2000">{{ form.get('descricao', padrao.get('descricao', '')) }}</textarea></div>
+      <div><label for="valor">Valor (R$)</label><input id="valor" name="valor" required inputmode="decimal" value="{{ form.get('valor', '') }}" placeholder="1500,00"></div>
+      <div><label for="desconto_incondicionado">Desconto incondicionado (R$)</label><input id="desconto_incondicionado" name="desconto_incondicionado" inputmode="decimal" value="{{ form.get('desconto_incondicionado', '') }}"></div>
+      <div><label for="competencia">Competência</label><input id="competencia" name="competencia" type="date" value="{{ form.get('competencia', '') }}"></div>
+      <div><label for="codigo_tributacao_nacional">Cód. tributação nacional (cTribNac)</label><input id="codigo_tributacao_nacional" name="codigo_tributacao_nacional" maxlength="6" value="{{ form.get('codigo_tributacao_nacional', padrao.get('codigo_tributacao_nacional', '')) }}"></div>
+      <div><label for="codigo_tributacao_municipal">Cód. tributação municipal</label><input id="codigo_tributacao_municipal" name="codigo_tributacao_municipal" value="{{ form.get('codigo_tributacao_municipal', padrao.get('codigo_tributacao_municipal', '')) }}"></div>
+      <div><label for="codigo_nbs">NBS</label><input id="codigo_nbs" name="codigo_nbs" value="{{ form.get('codigo_nbs', padrao.get('codigo_nbs', '')) }}"></div>
+      <div><label for="codigo_municipio_prestacao">Local da prestação (IBGE)</label><input id="codigo_municipio_prestacao" name="codigo_municipio_prestacao" value="{{ form.get('codigo_municipio_prestacao', padrao.get('codigo_municipio_prestacao', '')) }}" placeholder="padrão: município do prestador"></div>
+      <div><label for="retencao_iss">ISS</label>
+        {% set ret = form.get('retencao_iss', padrao.get('retencao_iss', '1'))|string %}
+        <select id="retencao_iss" name="retencao_iss">
+          <option value="1" {% if ret == '1' %}selected{% endif %}>Não retido</option>
+          <option value="2" {% if ret == '2' %}selected{% endif %}>Retido pelo tomador</option>
+          <option value="3" {% if ret == '3' %}selected{% endif %}>Retido pelo intermediário</option>
+        </select>
+      </div>
+      <div><label for="aliquota_iss">Alíquota ISS (%) — só p/ município não conveniado</label><input id="aliquota_iss" name="aliquota_iss" inputmode="decimal" value="{{ form.get('aliquota_iss', padrao.get('aliquota_iss', '')) }}"></div>
+      <div><label for="aliquota_simples">Alíquota efetiva SN (%)</label><input id="aliquota_simples" name="aliquota_simples" inputmode="decimal" value="{{ form.get('aliquota_simples', padrao.get('aliquota_simples', '')) }}"></div>
+    </div>
+    <div class="acoes">
+      <button class="btn sec" name="acao" value="previa">Pré-visualizar DPS</button>
+      <button class="btn" name="acao" value="emitir" onclick="return confirm('Emitir a NFS-e{% if ambiente == 1 %} em PRODUÇÃO{% endif %}?')">Emitir NFS-e</button>
+    </div>
+  </div>
+</form>
+{% if preview %}
+<div class="card">
+  <h2>Pré-visualização · {{ preview.id_dps }}</h2>
+  {% if preview.erros_esquema %}
+  <div class="flash erro">O XML não confere com o esquema oficial:<ul>{% for e in preview.erros_esquema %}<li>{{ e }}</li>{% endfor %}</ul></div>
+  {% else %}
+  <div class="flash ok">XML válido segundo o esquema oficial da NFS-e Nacional (leiaute {{ preview.versao }}).</div>
+  {% endif %}
+  <p class="sutil">XML ainda não assinado. O número da DPS só é reservado na emissão.</p>
+  <pre>{{ preview.xml }}</pre>
+</div>
+{% endif %}
+<script>
+  const TOMADORES = {{ tomadores|tojson }};
+  const sel = document.getElementById('sel_tomador');
+  if (sel) sel.addEventListener('change', () => {
+    const t = TOMADORES[sel.value] || {}; const e = t.endereco || {};
+    const v = {documento: t.documento, nome: t.nome, email: t.email, telefone: t.telefone, im: t.inscricao_municipal,
+      cep: e.cep, municipio: e.codigo_municipio, logradouro: e.logradouro, numero: e.numero, complemento: e.complemento, bairro: e.bairro};
+    for (const [k, val] of Object.entries(v)) document.getElementById('tomador_' + k).value = val || '';
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titulo %}Painel{% endblock %}
+{% block conteudo %}
+<h1>Painel</h1>
+{% if status.pendencias %}
+<div class="card">
+  <h2>Configuração</h2>
+  <ul class="pend">{% for p in status.pendencias %}<li>{{ p }}</li>{% endfor %}</ul>
+  <div class="acoes"><a class="btn sec" href="{{ url_for('configuracoes') }}">Abrir configurações</a></div>
+</div>
+{% endif %}
+<div class="kpis">
+  <div class="kpi"><div class="r">Notas emitidas</div><div class="v">{{ resumo.quantidade_emitidas }}</div></div>
+  <div class="kpi"><div class="r">Valor total emitido</div><div class="v">{{ resumo.valor_total_emitido|moeda }}</div></div>
+  <div class="kpi"><div class="r">Pendentes / rejeitadas</div><div class="v">{{ resumo.pendentes }} / {{ resumo.rejeitadas }}</div></div>
+  <div class="kpi"><div class="r">Próxima DPS</div><div class="v">{{ status.serie }}/{{ status.proximo_numero_dps }}</div></div>
+</div>
+<div class="card">
+  <h2>Últimas notas</h2>
+  {% include "_tabela_notas.html" %}
+  <div class="acoes"><a class="btn" href="{{ url_for('nova_nota') }}">Emitir NFS-e</a><a class="btn sec" href="{{ url_for('notas') }}">Ver todas</a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block titulo %}Notas{% endblock %}
+{% block conteudo %}
+<h1>Notas</h1>
+<div class="card">
+  <form method="get" class="grid">
+    <div><label for="q">Buscar</label><input id="q" name="q" value="{{ busca }}" placeholder="Tomador, descrição, chave…"></div>
+    <div><label for="status">Situação</label>
+      <select id="status" name="status">
+        <option value="">Todas</option>
+        {% for k, v in status_rotulos.items() %}<option value="{{ k }}" {% if filtro == k %}selected{% endif %}>{{ v }}</option>{% endfor %}
+      </select>
+    </div>
+    <div style="align-self:end"><button class="btn sec">Filtrar</button></div>
+  </form>
+</div>
+<div class="card">{% include "_tabela_notas.html" %}</div>
+{% endblock %}

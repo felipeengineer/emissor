@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titulo %}Nota {{ nota.id }}{% endblock %}
+{% block conteudo %}
+<h1>{% if nota.numero_nfse %}NFS-e {{ nota.numero_nfse }}{% else %}DPS {{ nota.serie }}/{{ nota.numero_dps }}{% endif %}
+  <span class="tag {{ nota.status }}">{{ status_rotulos.get(nota.status, nota.status) }}</span></h1>
+<div class="card">
+  <dl class="dados">
+    <dt>Ambiente</dt><dd>{{ 'Produção' if nota.ambiente == 1 else 'Homologação' }}</dd>
+    <dt>Chave de acesso</dt><dd>{{ nota.chave_acesso or '—' }}</dd>
+    <dt>Id da DPS</dt><dd>{{ nota.id_dps }}</dd>
+    <dt>Tomador</dt><dd>{{ nota.tomador_nome or 'Não identificado' }} {{ nota.tomador_documento|doc }}</dd>
+    <dt>Descrição</dt><dd>{{ nota.descricao }}</dd>
+    <dt>Valor</dt><dd>{{ nota.valor|moeda }}</dd>
+    <dt>Criada em</dt><dd>{{ nota.criado_em|replace('T', ' ') }}</dd>
+    {% if nota.mensagem %}<dt>Mensagem</dt><dd>{{ nota.mensagem }}</dd>{% endif %}
+  </dl>
+  <div class="acoes">
+    {% if nota.chave_acesso %}<a class="btn" href="{{ url_for('danfse', nota_id=nota.id) }}" target="_blank">DANFSe (PDF)</a>{% endif %}
+    {% if nota.nfse_xml %}<a class="btn sec" href="{{ url_for('baixar_xml', nota_id=nota.id, tipo='nfse') }}">XML da NFS-e</a>{% endif %}
+    {% if nota.dps_xml %}<a class="btn sec" href="{{ url_for('baixar_xml', nota_id=nota.id, tipo='dps') }}">XML da DPS</a>{% endif %}
+    {% if nota.status in ('pendente', 'erro_comunicacao') %}
+    <form method="post" action="{{ url_for('sincronizar', nota_id=nota.id) }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn sec">Consultar situação na SEFIN</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% if nota.status == 'emitida' %}
+<div class="card">
+  <h2>Cancelar NFS-e</h2>
+  <form method="post" action="{{ url_for('cancelar', nota_id=nota.id) }}" onsubmit="return confirm('Cancelar esta NFS-e? A operação é irreversível.')">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <div class="grid">
+      <div><label for="motivo">Motivo</label>
+        <select id="motivo" name="motivo">{% for k, v in motivos.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select>
+      </div>
+      <div class="wide"><label for="justificativa">Justificativa (15 a 255 caracteres)</label><input id="justificativa" name="justificativa" minlength="15" maxlength="255" required></div>
+    </div>
+    <div class="acoes"><button class="btn perigo">Cancelar NFS-e</button></div>
+  </form>
+</div>
+{% endif %}
+{% endblock %}
