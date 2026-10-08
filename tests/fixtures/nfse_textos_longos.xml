@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<NFSe xmlns="http://www.sped.fazenda.gov.br/nfse" versao="1.01">
+  <infNFSe Id="NFS35344012211222333000181000000000003126099055172624">
+    <xLocEmi>Osasco</xLocEmi>
+    <xLocPrestacao>São Paulo</xLocPrestacao>
+    <nNFSe>31</nNFSe>
+    <cLocIncid>3550308</cLocIncid>
+    <xLocIncid>São Paulo</xLocIncid>
+    <xTribNac>Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.</xTribNac>
+    <xNBS>Serviços de suporte em tecnologia da informação (TI)</xNBS>
+    <verAplic>SefinNacional_1.6.0</verAplic>
+    <ambGer>2</ambGer>
+    <tpEmis>1</tpEmis>
+    <procEmi>1</procEmi>
+    <cStat>100</cStat>
+    <dhProc>2026-09-30T23:58:52-03:00</dhProc>
+    <nDFSe>88513</nDFSe>
+    <emit>
+      <CNPJ>11222333000181</CNPJ>
+      <IM>1234567</IM>
+      <xNome>EXEMPLO TECNOLOGIA E SERVICOS LTDA</xNome>
+      <enderNac>
+        <xLgr>Avenida dos Autonomistas</xLgr>
+        <nro>1500</nro>
+        <xCpl>Sala 304</xCpl>
+        <xBairro>Centro</xBairro>
+        <cMun>3534401</cMun>
+        <UF>SP</UF>
+        <CEP>06020010</CEP>
+      </enderNac>
+    </emit>
+    <valores>
+      <vBC>12000.00</vBC>
+      <pAliqAplic>2.00</pAliqAplic>
+      <vISSQN>240.00</vISSQN>
+      <vTotalRet>240.00</vTotalRet>
+      <vLiq>11760.00</vLiq>
+    </valores>
+    <xOutInf>Mensagem da Administração Tributária Municipal: Etapa 1: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 2: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 3: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 4: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 5: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 6: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 7: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 8: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 9: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 10: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com FIM-TXT</xOutInf>
+    <IBSCBS>
+      <cLocalidadeIncid>3550308</cLocalidadeIncid>
+      <xLocalidadeIncid>São Paulo</xLocalidadeIncid>
+      <valores>
+        <vBC>11760.00</vBC>
+        <uf>
+          <pIBSUF>0.10</pIBSUF>
+          <pAliqEfetUF>0.10</pAliqEfetUF>
+        </uf>
+        <mun>
+          <pIBSMun>0.00</pIBSMun>
+          <pAliqEfetMun>0.00</pAliqEfetMun>
+        </mun>
+        <fed>
+          <pCBS>0.90</pCBS>
+          <pAliqEfetCBS>0.90</pAliqEfetCBS>
+        </fed>
+      </valores>
+      <totCIBS>
+        <vTotNF>11760.00</vTotNF>
+        <gIBS>
+          <vIBSTot>11.76</vIBSTot>
+          <gIBSUFTot>
+            <vIBSUF>11.76</vIBSUF>
+          </gIBSUFTot>
+          <gIBSMunTot>
+            <vIBSMun>0.00</vIBSMun>
+          </gIBSMunTot>
+        </gIBS>
+        <gCBS>
+          <vCBS>105.84</vCBS>
+        </gCBS>
+      </totCIBS>
+    </IBSCBS>
+    <DPS versao="1.01">
+      <infDPS Id="DPS353440121122233300018100001000000000000031">
+        <tpAmb>1</tpAmb>
+        <dhEmi>2026-09-30T23:58:41-03:00</dhEmi>
+        <verAplic>emissor-nfse-0.1.0</verAplic>
+        <serie>1</serie>
+        <nDPS>31</nDPS>
+        <dCompet>2026-09-30</dCompet>
+        <tpEmit>1</tpEmit>
+        <cLocEmi>3534401</cLocEmi>
+        <subst>
+          <chSubstda>35344012211222333000181000000000003026091002003004</chSubstda>
+          <cMotivo>99</cMotivo>
+          <xMotivo>Correção do valor contratado</xMotivo>
+        </subst>
+        <prest>
+          <CNPJ>11222333000181</CNPJ>
+          <IM>1234567</IM>
+          <regTrib>
+            <opSimpNac>3</opSimpNac>
+            <regApTribSN>1</regApTribSN>
+            <regEspTrib>0</regEspTrib>
+          </regTrib>
+        </prest>
+        <toma>
+          <CNPJ>12ABC34501DE35</CNPJ>
+          <IM>987654321</IM>
+          <xNome>COMPANHIA BRASILEIRA DE DISTRIBUICAO, LOGISTICA INTEGRADA, ARMAZENAGEM, TRANSPORTE MULTIMODAL, COMERCIO EXTERIOR E SERVICOS DE TECNOLOGIA DA INFORMACAO APLICADA A CADEIA DE SUPRIMENTOS DO VAREJO NACIONAL E INTERNACIONAL S.A. - FILIAL CENTRO DE DISTRIBUICAO REGIONAL SUDESTE FIM-DO-NOME</xNome>
+          <end>
+            <endNac>
+              <cMun>3550308</cMun>
+              <CEP>04538132</CEP>
+            </endNac>
+            <xLgr>Avenida Brigadeiro Faria Lima, Torre Corporativa Norte, acesso pela via local paralela à marginal do rio Pinheiros, portaria de cargas e descargas junto ao estacionamento de visitantes do bloco B</xLgr>
+            <nro>3477</nro>
+            <xCpl>Andar 14, conjuntos 141 a 148, ala oeste, recepção principal do centro de distribuição</xCpl>
+            <xBairro>Itaim Bibi</xBairro>
+          </end>
+          <fone>1130405060</fone>
+          <email>contas.a.pagar.notas.fiscais.servicos@distribuidora-exemplo-logistica.com.br</email>
+        </toma>
+        <interm>
+          <CNPJ>11444777000161</CNPJ>
+          <IM>55443322</IM>
+          <xNome>INTERMEDIADORA DE SERVICOS DIGITAIS S.A.</xNome>
+          <end>
+            <endNac>
+              <cMun>3304557</cMun>
+              <CEP>20040002</CEP>
+            </endNac>
+            <xLgr>Avenida Rio Branco</xLgr>
+            <nro>1</nro>
+            <xBairro>Centro</xBairro>
+          </end>
+          <fone>2125550100</fone>
+          <email>nfse@intermediadora.example.com</email>
+        </interm>
+        <serv>
+          <locPrest>
+            <cLocPrestacao>3550308</cLocPrestacao>
+          </locPrest>
+          <cServ>
+            <cTribNac>010701</cTribNac>
+            <xDescServ>Contrato 2026/0042. Etapa 1: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 2: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 3: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. 
+Etapa 4: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 5: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 6: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 7: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. 
+Etapa 8: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 9: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 10: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinament FIM-TXT</xDescServ>
+            <cNBS>115013000</cNBS>
+          </cServ>
+          <infoCompl>
+            <idDocTec>DRT-2026-000123</idDocTec>
+            <docRef>Pedido de compra PC-77801 de 01/09/2026</docRef>
+            <xPed>PC-77801</xPed>
+            <gItemPed>
+              <xItemPed>10</xItemPed>
+              <xItemPed>20</xItemPed>
+              <xItemPed>30</xItemPed>
+            </gItemPed>
+            <xInfComp>Observações do contrato: Etapa 1: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 2: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 3: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 4: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 5: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 6: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 7: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 8: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 9: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinamento presencial das equipes de faturamento. Etapa 10: Implantação de sistema de gestão empresarial com migração de dados legados, parametrização fiscal das filiais, integração com o e-commerce e treinam FIM-TXT</xInfComp>
+          </infoCompl>
+        </serv>
+        <valores>
+          <vServPrest>
+            <vServ>12000.00</vServ>
+          </vServPrest>
+          <trib>
+            <tribMun>
+              <tribISSQN>1</tribISSQN>
+              <tpRetISSQN>2</tpRetISSQN>
+              <pAliq>2.00</pAliq>
+            </tribMun>
+            <totTrib>
+              <pTotTribSN>11.20</pTotTribSN>
+            </totTrib>
+          </trib>
+        </valores>
+        <IBSCBS>
+          <finNFSe>0</finNFSe>
+          <cIndOp>100301</cIndOp>
+          <indDest>1</indDest>
+          <dest>
+            <CPF>12345678909</CPF>
+            <xNome>Carlos Eduardo Pereira</xNome>
+            <end>
+              <endNac>
+                <cMun>3509502</cMun>
+                <CEP>13010111</CEP>
+              </endNac>
+              <xLgr>Rua Barão de Jaguara</xLgr>
+              <nro>900</nro>
+              <xBairro>Centro</xBairro>
+            </end>
+            <email>carlos.pereira@example.com</email>
+          </dest>
+          <valores>
+            <trib>
+              <gIBSCBS>
+                <CST>000</CST>
+                <cClassTrib>000001</cClassTrib>
+              </gIBSCBS>
+            </trib>
+          </valores>
+        </IBSCBS>
+      </infDPS>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI="#DPS353440121122233300018100001000000000000031"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>NogbKvki72i2FGMmgQHSOQhGPS4=</DigestValue></Reference></SignedInfo><SignatureValue>DWbMrmrg1rZkjNV2GosU2Mwq+zdbjKRwZ8Y6P8Axf515xiEeY5KAwVr2bzejdDg5nLe15wZmxDy9feRb65LlRf6q4W0kdmmmzV39qbd3jinMUG0ZlZsdvYQ2aNb0koavzJZTozI2cZKhZLGrcj/vmhGk+ZsWxcs4xaRSSFsEP5xU6ypd8tMLVvVdztAHMygxq56dzz/KYmgr3hE5mzP1PWJXnRdoUjqVKGRZPE66KeMFK+SFGSGuj5scva+0ktLlRFgOyNfh1SmxSmsq//FggEBWc3Lp89jpEIVCWvbGGYkJOq3Ojp89ozofcVgUBYxy9vxhpfZOQ0/ToYNWntQneA==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC7DCCAdSgAwIBAgIUEHnFmvn5QJxAn6/LpDDIBqCVsoUwDQYJKoZIhvcNAQELBQAwMDEuMCwGA1UEAwwlQ0VSVElGSUNBRE8gREUgVEVTVEUgLSBOQU8gSUNQLUJSQVNJTDAeFw0yNjEwMDcyMjE1MDRaFw0zNjEwMDUyMjE1MDRaMDAxLjAsBgNVBAMMJUNFUlRJRklDQURPIERFIFRFU1RFIC0gTkFPIElDUC1CUkFTSUwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCWMkfwE8bKJyOf2Jo8QkQRLH1vq1YmvhL0veRcYc4/72x7l42BXbSTDFQ09n8z6J8jtuBZWnCol88fRvgeygREvZzSDYxJgsarA+h981LXFjTVzDdyiRU4D6XAI1f1+5erc15WLDrPmAbF7wjFm9BUUF6W3f4KMOEUVQsCCDDg1HRT4XYw+ITR6mBdbFjw5fgvVRe5QnIjmw2cbai3exbFMVScWodxEyL1bPDeBdfREXm+7cn/fZYnCHGKO0uy8sQ5/F3Q6L53jBwnshDoLEXZmPqme0j7nsTGVW+5U9D2eugvFzwCiSGqAf31xXgORnZxv++1Wqemirx+rV3JDa2lAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAGon63RKiH9bmJs4X7tCk+SS682mB3EwKDkyBvDIXGQeQU5bX7H3XfWPWgi4U52ST65ODR3y70ILDsm92R9NHdHQ6aA54f7qofBbKfZ1PSzToatYIpbzqZpDWJzHWbJ9PH1ZrRHubB3ZvO0gXaC5NV0BJLUQb9Db1dpAUJy1z5r3+Wsx+s4cyG72MAevF1W/MsBR08y27a9FV/Q8FoDwGGrEFptBuCp1lvFIfA8N7qddh5fP8a117mC8y+0IerOOVyEi6klMusIebnBQ7iZBl8WLENcy26zHo0PbIDMrSdqVY2087FQjnNEQ96ar4iZZrq2CDG3DCrV8mtBOIgdk7DU=</X509Certificate></X509Data></KeyInfo></Signature></DPS>
+  </infNFSe>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI="#NFS35344012211222333000181000000000003126099055172624"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>TZh6xUbOHl8OJMrfqI/kXEIh5CY=</DigestValue></Reference></SignedInfo><SignatureValue>G2F5ENDgSOWJSaHpReTTJHsTix5WH3dzn2lAFdTiIujSIc6HE86QvcoL/soKv74L9aCDk2gfkA6Kab2c+pF7bKQMfeBHDEl9bkY1/xvcnO71pndfCb/O9nikTFolff09yK2zqndaWDXnOEkEdwhcGGxhfY4lAueY+KIpTCRNHLRGHkbFRKFt8y4dBrFOfg+iDj/mZODcFmE2pxdP25bSleyiMZAzN8On84g7R0xyIVKngfkpYsfHxZybRoVq0pwMlJnX/zprG11sS9jQgwdPUQgRSyx6I8bAb+13eNwbGGb5QRyqH9jpdArqRSh9xic5NgLp56vcyXfnbTIplKQtBQ==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC7DCCAdSgAwIBAgIUEHnFmvn5QJxAn6/LpDDIBqCVsoUwDQYJKoZIhvcNAQELBQAwMDEuMCwGA1UEAwwlQ0VSVElGSUNBRE8gREUgVEVTVEUgLSBOQU8gSUNQLUJSQVNJTDAeFw0yNjEwMDcyMjE1MDRaFw0zNjEwMDUyMjE1MDRaMDAxLjAsBgNVBAMMJUNFUlRJRklDQURPIERFIFRFU1RFIC0gTkFPIElDUC1CUkFTSUwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCWMkfwE8bKJyOf2Jo8QkQRLH1vq1YmvhL0veRcYc4/72x7l42BXbSTDFQ09n8z6J8jtuBZWnCol88fRvgeygREvZzSDYxJgsarA+h981LXFjTVzDdyiRU4D6XAI1f1+5erc15WLDrPmAbF7wjFm9BUUF6W3f4KMOEUVQsCCDDg1HRT4XYw+ITR6mBdbFjw5fgvVRe5QnIjmw2cbai3exbFMVScWodxEyL1bPDeBdfREXm+7cn/fZYnCHGKO0uy8sQ5/F3Q6L53jBwnshDoLEXZmPqme0j7nsTGVW+5U9D2eugvFzwCiSGqAf31xXgORnZxv++1Wqemirx+rV3JDa2lAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAGon63RKiH9bmJs4X7tCk+SS682mB3EwKDkyBvDIXGQeQU5bX7H3XfWPWgi4U52ST65ODR3y70ILDsm92R9NHdHQ6aA54f7qofBbKfZ1PSzToatYIpbzqZpDWJzHWbJ9PH1ZrRHubB3ZvO0gXaC5NV0BJLUQb9Db1dpAUJy1z5r3+Wsx+s4cyG72MAevF1W/MsBR08y27a9FV/Q8FoDwGGrEFptBuCp1lvFIfA8N7qddh5fP8a117mC8y+0IerOOVyEi6klMusIebnBQ7iZBl8WLENcy26zHo0PbIDMrSdqVY2087FQjnNEQ96ar4iZZrq2CDG3DCrV8mtBOIgdk7DU=</X509Certificate></X509Data></KeyInfo></Signature></NFSe>
