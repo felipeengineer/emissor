@@ -59,8 +59,9 @@
           <option value="1" {% if cfg.ambiente == 1 %}selected{% endif %}>Produção</option>
         </select>
       </div>
-      <div><label for="serie">Série da DPS</label><input id="serie" name="serie" maxlength="5" value="{{ cfg.serie }}"></div>
+      <div><label for="serie">Série da DPS (1 a 49999 na API)</label><input id="serie" name="serie" type="number" min="1" max="49999" value="{{ cfg.serie }}"></div>
       <div><label for="ultimo_numero_dps">Último nº de DPS usado</label><input id="ultimo_numero_dps" name="ultimo_numero_dps" type="number" min="0" value="{{ ultimo }}"></div>
+      <div><label for="data_autorizacao_emissor_nacional">Autorização do Emissor Nacional (1ª competência)</label><input id="data_autorizacao_emissor_nacional" name="data_autorizacao_emissor_nacional" type="date" value="{{ cfg.data_autorizacao_emissor_nacional }}" placeholder="padrão ME/EPP: 01/11/2026"></div>
     </div>
     <div class="acoes"><button class="btn">Salvar</button></div>
   </form>
@@ -77,8 +78,8 @@
       <div><label for="codigo_tributacao_municipal">Cód. tributação municipal</label><input id="codigo_tributacao_municipal" name="codigo_tributacao_municipal" value="{{ padrao.codigo_tributacao_municipal or '' }}"></div>
       <div><label for="codigo_nbs">NBS</label><input id="codigo_nbs" name="codigo_nbs" value="{{ padrao.codigo_nbs or '' }}"></div>
       <div><label for="codigo_municipio_prestacao">Local da prestação (IBGE)</label><input id="codigo_municipio_prestacao" name="codigo_municipio_prestacao" value="{{ padrao.codigo_municipio_prestacao or '' }}"></div>
-      <div><label for="aliquota_iss">Alíquota ISS (%) — só se o município não for conveniado</label><input id="aliquota_iss" name="aliquota_iss" value="{{ padrao.aliquota_iss or '' }}"></div>
-      <div><label for="aliquota_simples">Alíquota efetiva SN (%)</label><input id="aliquota_simples" name="aliquota_simples" value="{{ padrao.aliquota_simples or '' }}"></div>
+      <div><label for="aliquota_iss">Alíquota ISS (%) — usada só com ISS retido</label><input id="aliquota_iss" name="aliquota_iss" value="{{ padrao.aliquota_iss or '' }}"></div>
+      <div><label for="aliquota_simples">Alíquota nominal SN (%) — pTotTribSN</label><input id="aliquota_simples" name="aliquota_simples" value="{{ padrao.aliquota_simples or '' }}"></div>
     </div>
     <div class="acoes"><button class="btn">Salvar serviço padrão</button></div>
   </form>
@@ -96,14 +97,14 @@
       </div>
       <div><label for="folha">Folha 12 meses (p/ fator R)</label><input id="folha" name="folha" inputmode="decimal" value="{{ request.form.get('folha', '') }}"></div>
     </div>
-    <div class="acoes"><button class="btn sec">Calcular</button><button class="btn" name="aplicar" value="1">Calcular e aplicar alíquota efetiva ao serviço padrão</button></div>
+    <div class="acoes"><button class="btn sec">Calcular</button><button class="btn" name="aplicar" value="1">Calcular e aplicar alíquota nominal ao serviço padrão</button></div>
   </form>
   {% if calculo %}
   <dl class="dados" style="margin-top:16px">
     <dt>Anexo / faixa</dt><dd>{{ calculo.anexo }} / {{ calculo.faixa }}ª</dd>
-    <dt>Alíquota nominal</dt><dd>{{ calculo.aliquota_nominal }}%</dd>
-    <dt>Alíquota efetiva (pTotTribSN)</dt><dd><strong>{{ calculo.aliquota_efetiva }}%</strong></dd>
-    <dt>Parcela de ISS</dt><dd>{{ calculo.aliquota_iss }}% <span class="sutil">(informativo: no Sistema Nacional o próprio sistema preenche a alíquota de municípios conveniados)</span></dd>
+    <dt>Alíquota nominal (pTotTribSN)</dt><dd><strong>{{ calculo.aliquota_nominal }}%</strong> <span class="sutil">(Cartilha NFS-e 20.5: informar a nominal, nunca a efetiva)</span></dd>
+    <dt>Alíquota efetiva</dt><dd>{{ calculo.aliquota_efetiva }}%</dd>
+    <dt>Parcela de ISS</dt><dd>{{ calculo.aliquota_iss }}% <span class="sutil">(use como alíquota do ISS quando o ISS for retido pelo tomador)</span></dd>
     {% if calculo.observacao %}<dt>Observação</dt><dd>{{ calculo.observacao }}</dd>{% endif %}
   </dl>
   {% endif %}

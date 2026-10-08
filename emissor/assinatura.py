@@ -6,6 +6,7 @@ import base64
 import contextlib
 import hashlib
 import os
+import re
 import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -54,6 +55,26 @@ class Certificado:
     def titular(self) -> str:
         cn = self.certificado.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)
         return cn[0].value if cn else self.certificado.subject.rfc4514_string()
+
+    @property
+    def documento_titular(self) -> str | None:
+        """CNPJ (OtherName 2.16.76.1.3.3) ou CPF (2.16.76.1.3.1) do titular ICP-Brasil.
+
+        Sem a extensão, usa o sufixo ":<documento>" do CN. A SEFIN exige que o documento do
+        certificado seja idêntico ao do emitente da DPS (E0718, Cartilha 17.2).
+        """
+        try:
+            san = self.certificado.extensions.get_extension_for_class(x509.SubjectAlternativeName).value
+        except x509.ExtensionNotFound:
+            san = None
+        if san is not None:
+            valores = {o.type_id.dotted_string: o.value for o in san.get_values_for_type(x509.OtherName)}
+            if m := re.search(rb"[0-9A-Z]{14}", valores.get("2.16.76.1.3.3", b"")):
+                return m.group().decode()
+            if m := re.search(rb"[0-9]{19}", valores.get("2.16.76.1.3.1", b"")):
+                return m.group().decode()[8:]  # data de nascimento (8) + CPF (11)
+        m = re.search(r":([0-9A-Z]{14}|[0-9]{11})$", self.titular)
+        return m.group(1) if m else None
 
     @property
     def validade(self) -> datetime:

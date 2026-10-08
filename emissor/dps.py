@@ -5,8 +5,10 @@ Leiaute: NFS-e Padrão Nacional (namespace http://www.sped.fazenda.gov.br/nfse).
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 from lxml import etree
@@ -16,10 +18,12 @@ from .modelos import (
     ErroValidacao,
     OpcaoSimplesNacional,
     Prestador,
+    RegimeApuracaoSN,
     RetencaoISS,
     Servico,
     Tomador,
     formatar_decimal,
+    normalizar_documento,
     somente_digitos,
 )
 
@@ -30,6 +34,11 @@ AMBIENTE_PRODUCAO = 1
 AMBIENTE_HOMOLOGACAO = 2  # "produção restrita"
 
 TP_EVENTO_CANCELAMENTO = "101101"
+
+# Faixa de série reservada ao "aplicativo próprio do contribuinte" (API); fora dela: rejeição E0010.
+SERIE_API_MAX = 49999
+ALIQUOTA_ISS_MIN_RETENCAO = Decimal("1.80")  # E0621/E0628
+ALIQUOTA_ISS_MAX = Decimal("5.00")  # E0595
 
 MOTIVOS_CANCELAMENTO = {
     1: "Erro na emissão",
@@ -51,28 +60,68 @@ class DadosDPS:
     versao: str = VERSAO_LEIAUTE
 
     def validar(self) -> None:
-        self.prestador.validar()
-        if self.tomador:
-            self.tomador.validar()
-        self.servico.validar()
+        """Regras locais do Anexo I (v1.01) que a SEFIN aplica; os códigos estão nas mensagens."""
+        p, t, s = self.prestador, self.tomador, self.servico
+        p.validar()
+        if t:
+            t.validar()
+        s.validar()
         self.serie = somente_digitos(self.serie) or "1"
-        if len(self.serie) > 5:
-            raise ErroValidacao("serie: máximo de 5 dígitos")
+        if not 1 <= int(self.serie) <= SERIE_API_MAX:
+            raise ErroValidacao(f"série da DPS emitida via API deve estar entre 1 e {SERIE_API_MAX} (regra E0010)")
         if not 1 <= int(self.numero) <= 999_999_999_999_999:
             raise ErroValidacao("numero da DPS fora da faixa permitida")
         if self.ambiente not in (AMBIENTE_PRODUCAO, AMBIENTE_HOMOLOGACAO):
             raise ErroValidacao("ambiente deve ser 1 (produção) ou 2 (homologação)")
-        if self.servico.retencao_iss != RetencaoISS.NAO_RETIDO and not self.tomador:
-            raise ErroValidacao("ISS retido exige a identificação do tomador")
-        # E0235: emitida pelo prestador, tomador com CNPJ exige endereço nacional.
-        if self.tomador and len(self.tomador.documento) == 14 and not self.tomador.endereco:
-            raise ErroValidacao("Tomador com CNPJ exige endereço (regra E0235 da NFS-e Nacional)")
-        # E0712: ME/EPP não pode usar indTotTrib; precisa informar o percentual do Simples (pTotTribSN).
-        if self.prestador.opcao_simples == OpcaoSimplesNacional.ME_EPP and self.servico.aliquota_simples is None:
+
+        retido = s.retencao_iss != RetencaoISS.NAO_RETIDO
+        if retido and p.opcao_simples == OpcaoSimplesNacional.MEI:
+            raise ErroValidacao("MEI não pode ter ISS retido (regra E0583)")
+        if s.retencao_iss == RetencaoISS.RETIDO_PELO_INTERMEDIARIO:
             raise ErroValidacao(
-                "ME/EPP deve informar a alíquota efetiva do Simples Nacional (pTotTribSN, regra E0712); "
-                "use a calculadora em Configurações para estimá-la"
+                "ISS retido pelo intermediário exige o grupo do intermediário, que este emissor não gera "
+                "(regras E0264/E0293)"
             )
+        if retido and not t:
+            raise ErroValidacao("ISS retido exige a identificação do tomador (regra E0204)")
+        if s.retencao_iss == RetencaoISS.RETIDO_PELO_TOMADOR and not t.endereco:
+            raise ErroValidacao("ISS retido pelo tomador exige o endereço do tomador (regra E0237)")
+        # E0235 (aplicada no ADN): tomador com CNPJ exige endereço nacional.
+        if t and len(t.documento) == 14 and not t.endereco:
+            raise ErroValidacao("Tomador com CNPJ exige endereço (regra E0235)")
+
+        if p.opcao_simples == OpcaoSimplesNacional.ME_EPP and s.aliquota_simples is None:
+            raise ErroValidacao(
+                "ME/EPP deve informar a alíquota nominal do Simples Nacional da sua faixa (pTotTribSN, "
+                "regra E0712); a calculadora em Configurações mostra o valor"
+            )
+        if deve_informar_paliq(p, s):
+            if s.aliquota_iss is None:
+                raise ErroValidacao(
+                    "informe a alíquota do ISS: obrigatória para ME/EPP com ISS retido, ou com ISS fora do "
+                    "Simples em município não conveniado (regras E0621/E0628/E0640)"
+                )
+            minimo = ALIQUOTA_ISS_MIN_RETENCAO if retido else Decimal("0.01")
+            if not minimo <= s.aliquota_iss <= ALIQUOTA_ISS_MAX:
+                raise ErroValidacao(
+                    f"alíquota do ISS deve estar entre {minimo:.2f}% e {ALIQUOTA_ISS_MAX:.2f}% (regras E0595/E0621)"
+                )
+
+
+def deve_informar_paliq(prestador: Prestador, servico: Servico) -> bool:
+    """Se a DPS deve levar pAliq. Fora destes casos o campo é proibido e não é enviado.
+
+    - MEI: nunca (E0600).
+    - ME/EPP com ISS no DAS (regApTribSN=1): só com ISS retido (obrigatório: E0621/E0628;
+      proibido sem retenção: E0625/E0631).
+    - ME/EPP com ISS fora do DAS (regApTribSN 2 ou 3): só se o município de incidência não for
+      conveniado ativo (obrigatório: E0640; proibido em conveniado: E0635).
+    """
+    if prestador.opcao_simples != OpcaoSimplesNacional.ME_EPP:
+        return False
+    if prestador.regime_apuracao_sn == RegimeApuracaoSN.TRIBUTOS_FEDERAIS_E_ISS_PELO_SN:
+        return servico.retencao_iss != RetencaoISS.NAO_RETIDO
+    return not servico.municipio_incidencia_conveniado
 
 
 def agora_brasilia() -> datetime:
@@ -83,7 +132,7 @@ def agora_brasilia() -> datetime:
 
 def id_dps(prestador: Prestador, serie: str, numero: int) -> str:
     """Id = "DPS" + cLocEmi(7) + tipo inscrição(1: 1=CPF, 2=CNPJ) + inscrição(14) + série(5) + nDPS(15)."""
-    doc = somente_digitos(prestador.documento)
+    doc = normalizar_documento(prestador.documento)
     tipo = "2" if len(doc) == 14 else "1"
     return (
         "DPS"
@@ -103,7 +152,7 @@ def _sub(pai: etree._Element, tag: str, texto: str | None = None) -> etree._Elem
 
 
 def _documento(pai: etree._Element, doc: str) -> None:
-    doc = somente_digitos(doc)
+    doc = normalizar_documento(doc)
     _sub(pai, "CNPJ" if len(doc) == 14 else "CPF", doc)
 
 
@@ -191,7 +240,7 @@ def montar_dps(dados: DadosDPS) -> etree._Element:
     # Ordem no XSD 1.01: tribISSQN → cPaisResult? → tpImunidade? → exigSusp? → BM? → tpRetISSQN → pAliq?
     # (no 1.00 o pAliq vinha antes do tpRetISSQN).
     _sub(mun, "tpRetISSQN", int(s.retencao_iss))
-    if s.aliquota_iss is not None and p.opcao_simples == OpcaoSimplesNacional.ME_EPP:
+    if deve_informar_paliq(p, s):
         _sub(mun, "pAliq", formatar_decimal(s.aliquota_iss))
 
     # Optantes do SN: PIS/COFINS/IRPJ/CSLL/CPP são recolhidos no DAS, então não há grupo tribFed.
@@ -215,16 +264,18 @@ def montar_pedido_cancelamento(
     versao: str = VERSAO_LEIAUTE,
 ) -> etree._Element:
     """Gera o <pedRegEvento> de cancelamento (e101101), ainda sem assinatura."""
-    chave = somente_digitos(chave_acesso)
-    if len(chave) != 50:
-        raise ErroValidacao("chave de acesso deve ter 50 dígitos")
+    chave = normalizar_chave(chave_acesso)
     if codigo_motivo not in MOTIVOS_CANCELAMENTO:
         raise ErroValidacao(f"motivo de cancelamento inválido; use um de {sorted(MOTIVOS_CANCELAMENTO)}")
-    justificativa = (justificativa or "").strip()
+    justificativa = normalizar_texto(justificativa)
     if not 15 <= len(justificativa) <= 255:
         raise ErroValidacao("justificativa do cancelamento deve ter entre 15 e 255 caracteres")
-    doc = somente_digitos(documento_autor)
+    if not re.fullmatch(r"[\x21-\xff][\x20-\xff]*[\x21-\xff]", justificativa):
+        raise ErroValidacao("justificativa: use apenas letras, números e pontuação comum (sem emojis)")
+    doc = normalizar_documento(documento_autor)
     dh = data_evento or agora_brasilia()
+    if dh.tzinfo is None:
+        raise ErroValidacao("data_evento precisa ter fuso horário")
 
     raiz = etree.Element(f"{{{NS}}}pedRegEvento", nsmap={None: NS})
     raiz.set("versao", versao)
@@ -240,6 +291,22 @@ def montar_pedido_cancelamento(
     _sub(ev, "cMotivo", codigo_motivo)
     _sub(ev, "xMotivo", justificativa)
     return raiz
+
+
+def normalizar_chave(chave_acesso: str) -> str:
+    """Chave de acesso de 50 posições; a inscrição (posições 10–23) pode ter letras (CNPJ alfanumérico)."""
+    chave = re.sub(r"[^0-9A-Z]", "", (chave_acesso or "").upper())
+    if not re.fullmatch(r"[0-9]{9}[0-9A-Z]{14}[0-9]{27}", chave):
+        raise ErroValidacao("chave de acesso inválida: deve ter 50 posições")
+    return chave
+
+
+_TROCAS_TEXTO = str.maketrans({"\u201c": '"', "\u201d": '"', "\u2018": "'", "\u2019": "'", "\u2013": "-", "\u2014": "-", "\u2026": "..."})
+
+
+def normalizar_texto(texto: str | None) -> str:
+    """Troca aspas curvas, travessões e reticências por equivalentes Latin-1 e junta as linhas."""
+    return " ".join((texto or "").translate(_TROCAS_TEXTO).split())
 
 
 def para_bytes(el: etree._Element) -> bytes:

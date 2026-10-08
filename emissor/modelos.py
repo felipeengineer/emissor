@@ -40,6 +40,11 @@ def somente_digitos(valor: str | None) -> str:
     return re.sub(r"\D", "", valor or "")
 
 
+def normalizar_documento(valor: str | None) -> str:
+    """CPF/CNPJ sem máscara. Mantém letras (CNPJ alfanumérico, em produção desde 10/08/2026)."""
+    return re.sub(r"[^0-9A-Z]", "", (valor or "").upper())
+
+
 def cpf_valido(cpf: str) -> bool:
     cpf = somente_digitos(cpf)
     if len(cpf) != 11 or cpf == cpf[0] * 11:
@@ -53,13 +58,17 @@ def cpf_valido(cpf: str) -> bool:
 
 
 def cnpj_valido(cnpj: str) -> bool:
-    cnpj = somente_digitos(cnpj)
-    if len(cnpj) != 14 or cnpj == cnpj[0] * 14:
+    """CNPJ numérico ou alfanumérico: 12 posições [0-9A-Z] + 2 DVs numéricos.
+
+    O DV usa o valor ASCII − 48 de cada caractere (igual ao dígito para 0–9) e os pesos do módulo 11.
+    """
+    cnpj = normalizar_documento(cnpj)
+    if not re.fullmatch(r"[0-9A-Z]{12}[0-9]{2}", cnpj) or cnpj == cnpj[0] * 14:
         return False
     pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
     pesos2 = [6] + pesos1
     for pesos, pos in ((pesos1, 12), (pesos2, 13)):
-        soma = sum(int(d) * p for d, p in zip(cnpj[:pos], pesos))
+        soma = sum((ord(c) - 48) * p for c, p in zip(cnpj[:pos], pesos))
         resto = soma % 11
         dv = 0 if resto < 2 else 11 - resto
         if dv != int(cnpj[pos]):
@@ -68,8 +77,8 @@ def cnpj_valido(cnpj: str) -> bool:
 
 
 def validar_documento(doc: str, campo: str = "documento") -> str:
-    """Retorna o CPF/CNPJ só com dígitos, ou levanta ErroValidacao."""
-    d = somente_digitos(doc)
+    """Retorna o CPF/CNPJ normalizado (sem máscara), ou levanta ErroValidacao."""
+    d = normalizar_documento(doc)
     if len(d) == 11 and cpf_valido(d):
         return d
     if len(d) == 14 and cnpj_valido(d):
@@ -172,9 +181,11 @@ class Servico:
     codigo_tributacao_municipal: str = ""  # cTribMun (3 dígitos), opcional
     codigo_nbs: str = ""  # cNBS, opcional
     retencao_iss: RetencaoISS = RetencaoISS.NAO_RETIDO
-    aliquota_iss: Decimal | None = None  # pAliq (%), ME/EPP; só p/ município fora do Sistema Nacional (nos conveniados o sistema preenche)
-    aliquota_simples: Decimal | None = None  # pTotTribSN (%), alíquota efetiva do SN (ME/EPP)
+    aliquota_iss: Decimal | None = None  # pAliq (%): ver dps.deve_informar_paliq (regras E0621 a E0640)
+    aliquota_simples: Decimal | None = None  # pTotTribSN (%): alíquota NOMINAL da faixa do SN (Cartilha 20.5)
     desconto_incondicionado: Decimal = field(default_factory=lambda: Decimal("0"))
+    # Convênio do município de incidência ativo no Sistema Nacional (quase todos, inclusive Osasco).
+    municipio_incidencia_conveniado: bool = True
 
     def validar(self) -> None:
         self.codigo_tributacao_nacional = somente_digitos(self.codigo_tributacao_nacional)
@@ -196,8 +207,8 @@ class Servico:
                 raise ErroValidacao("servico.aliquota_iss deve estar entre 0 e 5%")
         if self.aliquota_simples is not None:
             self.aliquota_simples = decimal2(self.aliquota_simples, "servico.aliquota_simples")
-            if not Decimal("0") <= self.aliquota_simples <= Decimal("100"):
-                raise ErroValidacao("servico.aliquota_simples deve estar entre 0 e 100%")
+            if not Decimal("0") < self.aliquota_simples < Decimal("100"):
+                raise ErroValidacao("servico.aliquota_simples deve ser maior que 0 e menor que 100%")
         self.desconto_incondicionado = decimal2(self.desconto_incondicionado, "servico.desconto_incondicionado")
         if self.desconto_incondicionado < 0 or self.desconto_incondicionado >= self.valor:
             raise ErroValidacao("servico.desconto_incondicionado inválido")

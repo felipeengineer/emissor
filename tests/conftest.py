@@ -44,7 +44,9 @@ class ClienteFalso:
     def __init__(self):
         self.enviados = []
         self.eventos = []
+        self.eventos_externos = []
         self.erro: ErroSefin | None = None
+        self.erro_evento: ErroSefin | None = None
 
     def emitir(self, xml: bytes):
         self.enviados.append(xml)
@@ -63,11 +65,18 @@ class ClienteFalso:
         return self.emitir(b"")
 
     def registrar_evento(self, chave, xml):
+        if self.erro_evento:
+            erro, self.erro_evento = self.erro_evento, None
+            self.eventos.append((chave, xml))  # simula: a SEFIN registrou, mas a resposta se perdeu
+            raise erro
         self.eventos.append((chave, xml))
         return {"eventoXmlGZipB64": ""}
 
-    def baixar_danfse(self, chave):
-        return b"%PDF-1.4 teste"
+    def consultar_eventos(self, chave):
+        return [{"tipoEvento": "101101"} for c, _ in self.eventos if c == chave] + self.eventos_externos
+
+    def parametros_convenio(self, cod):
+        return {"codigoMunicipio": cod, "aderenteEmissorNacional": 0}
 
 
 @pytest.fixture

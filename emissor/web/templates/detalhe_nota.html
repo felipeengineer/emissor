@@ -15,7 +15,13 @@
     {% if nota.mensagem %}<dt>Mensagem</dt><dd>{{ nota.mensagem }}</dd>{% endif %}
   </dl>
   <div class="acoes">
-    {% if nota.chave_acesso %}<a class="btn" href="{{ url_for('danfse', nota_id=nota.id) }}" target="_blank">DANFSe (PDF)</a>{% endif %}
+    {% if nota.chave_acesso %}<a class="btn" href="{{ url_for('danfse', nota_id=nota.id) }}" target="_blank">DANFSe (PDF)</a>
+    <a class="btn sec" href="https://www.nfse.gov.br/ConsultaPublica/?tpc=1&chave={{ nota.chave_acesso }}" target="_blank" rel="noopener">Consulta Pública</a>{% endif %}
+    {% if nota.chave_acesso and nota.status in ('emitida', 'cancelada', 'substituida') %}
+    <form method="post" action="{{ url_for('sincronizar', nota_id=nota.id) }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn sec">Atualizar situação</button>
+    </form>
+    {% endif %}
     {% if nota.nfse_xml %}<a class="btn sec" href="{{ url_for('baixar_xml', nota_id=nota.id, tipo='nfse') }}">XML da NFS-e</a>{% endif %}
     {% if nota.dps_xml %}<a class="btn sec" href="{{ url_for('baixar_xml', nota_id=nota.id, tipo='dps') }}">XML da DPS</a>{% endif %}
     {% if nota.status in ('pendente', 'erro_comunicacao') %}

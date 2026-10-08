@@ -18,6 +18,7 @@ from emissor.modelos import (
     Tomador,
     cnpj_valido,
     cpf_valido,
+    validar_documento,
 )
 
 N = {"n": NS}
@@ -41,11 +42,37 @@ def servico(**kw):
     return Servico(**base)
 
 
+TOMADOR_COMPLETO = Tomador(
+    "52998224725",
+    "Fulano",
+    Endereco("3550308", "01001000", "Praça da Sé", "1", "Sé", "apto 2"),
+    email="f@example.com",
+    telefone="1133334444",
+    inscricao_municipal="999",
+)
+
+
 def test_validacao_documentos():
     assert cpf_valido("529.982.247-25")
     assert not cpf_valido("111.111.111-11")
     assert cnpj_valido("11.222.333/0001-81")
     assert not cnpj_valido("11.222.333/0001-82")
+    # CNPJ alfanumérico: exemplo da RFB e o primeiro emitido (Banco do Brasil)
+    assert cnpj_valido("12.ABC.345/01DE-35")
+    assert cnpj_valido("00.000.000/E08G-12")
+    assert not cnpj_valido("12.ABC.345/01DE-36")
+    assert validar_documento("12.abc.345/01de-35") == "12ABC34501DE35"
+
+
+def test_cnpj_alfanumerico_no_xml_e_no_id(pfx):
+    p = prestador(documento="12.ABC.345/01DE-35")
+    tom = Tomador("00.000.000/E08G-12", "Banco", Endereco("3550308", "01001000", "Rua X", "1", "Centro"))
+    raiz = montar_dps(DadosDPS(p, tom, servico(), "1", 7))
+    inf = raiz.find("n:infDPS", N)
+    assert inf.get("Id") == "DPS35503082" + "12ABC34501DE35" + "00001" + "000000000000007"
+    assert inf.findtext("n:prest/n:CNPJ", namespaces=N) == "12ABC34501DE35"
+    assert inf.findtext("n:toma/n:CNPJ", namespaces=N) == "00000000E08G12"
+    assert erros_esquema(raiz, "DPS") == []
 
 
 def test_id_dps_tem_45_caracteres():
@@ -62,7 +89,8 @@ def test_montar_dps_me_epp():
         Endereco("3550308", "01001-000", "Praça da Sé", "1", "Sé"),
         email="f@example.com",
     )
-    raiz = montar_dps(DadosDPS(prestador(), tom, servico(aliquota_iss="2.01"), "1", 27, data_emissao=dh))
+    # ISS retido pelo tomador: pAliq é obrigatório (E0621)
+    raiz = montar_dps(DadosDPS(prestador(), tom, servico(aliquota_iss="2.01", retencao_iss=2), "1", 27, data_emissao=dh))
     inf = raiz.find("n:infDPS", N)
     assert raiz.get("versao") == "1.01"
     assert inf.findtext("n:dhEmi", namespaces=N) == "2026-10-08T10:00:00-03:00"
@@ -123,18 +151,53 @@ def test_regras_de_rejeicao_da_sefin():
 
 
 def test_iss_retido_exige_tomador():
-    with pytest.raises(ErroValidacao):
-        montar_dps(DadosDPS(prestador(), None, servico(retencao_iss=2), "1", 1))
+    with pytest.raises(ErroValidacao, match="E0204"):
+        montar_dps(DadosDPS(prestador(), None, servico(retencao_iss=2, aliquota_iss="2"), "1", 1))
 
 
-TOMADOR_COMPLETO = Tomador(
-    "52998224725",
-    "Fulano",
-    Endereco("3550308", "01001000", "Praça da Sé", "1", "Sé", "apto 2"),
-    email="f@example.com",
-    telefone="1133334444",
-    inscricao_municipal="999",
+SEM_ENDERECO = Tomador("52998224725", "Fulano")
+
+
+@pytest.mark.parametrize(
+    "prest, tom, serv, regra",
+    [
+        (prestador(opcao_simples=OpcaoSimplesNacional.MEI), SEM_ENDERECO, servico(retencao_iss=2), "E0583"),
+        (prestador(), SEM_ENDERECO, servico(retencao_iss=3, aliquota_iss="2"), "E0264"),
+        (prestador(), SEM_ENDERECO, servico(retencao_iss=2, aliquota_iss="2"), "E0237"),
+        (prestador(), TOMADOR_COMPLETO, servico(retencao_iss=2), "E0621"),
+        (prestador(), TOMADOR_COMPLETO, servico(retencao_iss=2, aliquota_iss="1.5"), "E0621"),
+        (prestador(regime_apuracao_sn=2), None, servico(municipio_incidencia_conveniado=False), "E0640"),
+    ],
 )
+def test_regras_de_retencao_e_aliquota(prest, tom, serv, regra):
+    with pytest.raises(ErroValidacao, match=regra):
+        montar_dps(DadosDPS(prest, tom, serv, "1", 1))
+
+
+@pytest.mark.parametrize(
+    "prest, serv, envia",
+    [
+        (prestador(), servico(aliquota_iss="2"), False),  # E0625: sem retenção, pAliq proibido
+        (prestador(regime_apuracao_sn=2), servico(aliquota_iss="3"), False),  # E0635: conveniado
+        (prestador(regime_apuracao_sn=2), servico(aliquota_iss="3", municipio_incidencia_conveniado=False), True),
+        (prestador(opcao_simples=OpcaoSimplesNacional.MEI), servico(aliquota_iss="2"), False),  # E0600
+    ],
+)
+def test_paliq_so_quando_permitido(prest, serv, envia):
+    raiz = montar_dps(DadosDPS(prest, None, serv, "1", 1))
+    assert (raiz.find(".//n:pAliq", N) is not None) is envia
+
+
+@pytest.mark.parametrize("serie, ok", [("1", True), ("49999", True), ("50000", False), ("70000", False)])
+def test_faixa_de_serie_da_api(serie, ok):
+    dados = DadosDPS(prestador(), None, servico(), serie, 1)
+    if ok:
+        montar_dps(dados)
+    else:
+        with pytest.raises(ErroValidacao, match="E0010"):
+            montar_dps(dados)
+
+
 
 
 @pytest.mark.parametrize(
