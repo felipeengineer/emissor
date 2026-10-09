@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import gzip
+import os
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -12,16 +13,26 @@ import requests
 from .assinatura import Certificado
 from .dps import AMBIENTE_PRODUCAO
 
+# A produção restrita usa o prefixo /API/ (página gov.br "APIs – Prod. Restrita e Produção", citada pelo
+# levantamento; os manuais baixados não trazem a URL base). Pode ser sobrescrita pelas variáveis
+# EMISSOR_SEFIN_URL_PRODUCAO e EMISSOR_SEFIN_URL_HOMOLOGACAO.
 URLS = {
     AMBIENTE_PRODUCAO: {
         "sefin": "https://sefin.nfse.gov.br/SefinNacional",
         "adn": "https://adn.nfse.gov.br",
     },
     2: {
-        "sefin": "https://sefin.producaorestrita.nfse.gov.br/SefinNacional",
+        "sefin": "https://sefin.producaorestrita.nfse.gov.br/API/SefinNacional",
         "adn": "https://adn.producaorestrita.nfse.gov.br",
     },
 }
+_VARIAVEIS_URL = {AMBIENTE_PRODUCAO: "EMISSOR_SEFIN_URL_PRODUCAO", 2: "EMISSOR_SEFIN_URL_HOMOLOGACAO"}
+
+
+def url_base(ambiente: int, servico: str = "sefin") -> str:
+    if servico == "sefin" and os.environ.get(_VARIAVEIS_URL[ambiente]):
+        return os.environ[_VARIAVEIS_URL[ambiente]].rstrip("/")
+    return URLS[ambiente][servico]
 
 
 def gzip_b64(xml: bytes) -> str:
@@ -61,7 +72,7 @@ class ClienteSefin:
         self.sessao = sessao or requests.Session()
 
     def _requisitar(self, metodo: str, servico: str, caminho: str, json: dict | None = None) -> requests.Response:
-        url = URLS[self.ambiente][servico] + caminho
+        url = url_base(self.ambiente, servico) + caminho
         with self.certificado.arquivos_pem() as (cert, chave):
             try:
                 return self.sessao.request(
@@ -70,18 +81,18 @@ class ClienteSefin:
                     json=json,
                     cert=(cert, chave),
                     timeout=self.timeout,
-                    headers={"Accept": "application/json, application/pdf"},
+                    headers={"Accept": "application/json"},
                 )
             except requests.RequestException as e:
                 raise ErroSefin(f"Falha de comunicação com {url}: {e}") from e
 
     @staticmethod
-    def _json_ou_erro(resp: requests.Response, contexto: str) -> dict[str, Any]:
+    def _json_ou_erro(resp: requests.Response, contexto: str) -> Any:
         try:
             corpo = resp.json()
         except ValueError:
             corpo = None
-        if resp.ok and isinstance(corpo, dict):
+        if resp.ok and isinstance(corpo, (dict, list)):
             return corpo
         erros: list[dict[str, Any]] = []
         if isinstance(corpo, dict):
@@ -118,9 +129,18 @@ class ClienteSefin:
         )
         return self._json_ou_erro(resp, "Evento rejeitado")
 
-    def baixar_danfse(self, chave_acesso: str) -> bytes:
-        resp = self._requisitar("GET", "adn", f"/danfse/{chave_acesso}")
-        if resp.ok and resp.content[:4] == b"%PDF":
-            return resp.content
-        self._json_ou_erro(resp, "Download do DANFSe")
-        raise ErroSefin("Download do DANFSe: resposta não é um PDF", resp.status_code)
+    def consultar_eventos(self, chave_acesso: str) -> Any:
+        """GET /nfse/{chave}/eventos — eventos vinculados (cancelamento, substituição...). 404 = nenhum."""
+        resp = self._requisitar("GET", "sefin", f"/nfse/{chave_acesso}/eventos")
+        if resp.status_code == 404:
+            return []
+        return self._json_ou_erro(resp, "Consulta de eventos")
+
+    def parametros_convenio(self, codigo_municipio: str) -> Any:
+        """GET /parametros_municipais/{municipio}/convenio — situação do convênio do município.
+
+        Campos citados na Cartilha 19.6: aderenteEmissorNacional (0 = ME/EPP rejeitada por E0039) e
+        situacaoEmissaoPadraoContribuintesRFB (0 = exige cadastro no CNC, senão E0084).
+        """
+        resp = self._requisitar("GET", "sefin", f"/parametros_municipais/{codigo_municipio}/convenio")
+        return self._json_ou_erro(resp, "Consulta de convênio municipal")

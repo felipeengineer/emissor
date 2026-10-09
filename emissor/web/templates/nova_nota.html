@@ -34,12 +34,19 @@
         <select id="retencao_iss" name="retencao_iss">
           <option value="1" {% if ret == '1' %}selected{% endif %}>Não retido</option>
           <option value="2" {% if ret == '2' %}selected{% endif %}>Retido pelo tomador</option>
-          <option value="3" {% if ret == '3' %}selected{% endif %}>Retido pelo intermediário</option>
         </select>
       </div>
-      <div><label for="aliquota_iss">Alíquota ISS (%) — só p/ município não conveniado</label><input id="aliquota_iss" name="aliquota_iss" inputmode="decimal" value="{{ form.get('aliquota_iss', padrao.get('aliquota_iss', '')) }}"></div>
-      <div><label for="aliquota_simples">Alíquota efetiva SN (%)</label><input id="aliquota_simples" name="aliquota_simples" inputmode="decimal" value="{{ form.get('aliquota_simples', padrao.get('aliquota_simples', '')) }}"></div>
+      <div><label for="aliquota_iss">Alíquota ISS (%) — só com ISS retido (mín. 1,80)</label><input id="aliquota_iss" name="aliquota_iss" inputmode="decimal" value="{{ form.get('aliquota_iss', padrao.get('aliquota_iss', '')) }}"></div>
+      <div><label for="aliquota_simples">Alíquota nominal SN (%) — pTotTribSN</label><input id="aliquota_simples" name="aliquota_simples" inputmode="decimal" value="{{ form.get('aliquota_simples', padrao.get('aliquota_simples', '')) }}"></div>
     </div>
+    <p class="sutil">MEI não pode ter ISS retido. A alíquota de ISS só vai na nota quando o ISS é retido pelo tomador
+      (regras E0621/E0625); nos demais casos o Sistema Nacional não aceita o campo.</p>
+    {% if ambiente == 1 %}
+    <label style="display:flex;gap:8px;align-items:center;font-weight:normal;color:inherit">
+      <input type="checkbox" name="confirmar_competencia" value="1" style="width:auto">
+      Confirmo emitir com competência anterior à autorização do Emissor Nacional (risco de rejeição E0025)
+    </label>
+    {% endif %}
     <div class="acoes">
       <button class="btn sec" name="acao" value="previa">Pré-visualizar DPS</button>
       <button class="btn" name="acao" value="emitir" onclick="return confirm('Emitir a NFS-e{% if ambiente == 1 %} em PRODUÇÃO{% endif %}?')">Emitir NFS-e</button>

@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<NFSe xmlns="http://www.sped.fazenda.gov.br/nfse" versao="1.01">
+  <infNFSe Id="NFS35344012211222333000181000000000002726104488123750">
+    <xLocEmi>Osasco</xLocEmi>
+    <xLocPrestacao>Osasco</xLocPrestacao>
+    <nNFSe>27</nNFSe>
+    <cLocIncid>3534401</cLocIncid>
+    <xLocIncid>Osasco</xLocIncid>
+    <xTribNac>Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados.</xTribNac>
+    <xNBS>Serviços de suporte em tecnologia da informação (TI)</xNBS>
+    <verAplic>SefinNacional_1.6.0</verAplic>
+    <ambGer>2</ambGer>
+    <tpEmis>1</tpEmis>
+    <procEmi>1</procEmi>
+    <cStat>100</cStat>
+    <dhProc>2026-10-08T10:15:03-03:00</dhProc>
+    <nDFSe>88412</nDFSe>
+    <emit>
+      <CNPJ>11222333000181</CNPJ>
+      <IM>1234567</IM>
+      <xNome>EXEMPLO TECNOLOGIA E SERVICOS LTDA</xNome>
+      <enderNac>
+        <xLgr>Avenida dos Autonomistas</xLgr>
+        <nro>1500</nro>
+        <xCpl>Sala 304</xCpl>
+        <xBairro>Centro</xBairro>
+        <cMun>3534401</cMun>
+        <UF>SP</UF>
+        <CEP>06020010</CEP>
+      </enderNac>
+      <fone>1136851234</fone>
+      <email>contato@exemplotecnologia.com.br</email>
+    </emit>
+    <valores>
+      <vBC>1450.50</vBC>
+      <pAliqAplic>2.01</pAliqAplic>
+      <vISSQN>29.16</vISSQN>
+      <vLiq>1450.50</vLiq>
+    </valores>
+    <DPS versao="1.01">
+      <infDPS Id="DPS353440121122233300018100001000000000000027">
+        <tpAmb>2</tpAmb>
+        <dhEmi>2026-10-08T10:15:00-03:00</dhEmi>
+        <verAplic>emissor-nfse-0.1.0</verAplic>
+        <serie>1</serie>
+        <nDPS>27</nDPS>
+        <dCompet>2026-10-08</dCompet>
+        <tpEmit>1</tpEmit>
+        <cLocEmi>3534401</cLocEmi>
+        <prest>
+          <CNPJ>11222333000181</CNPJ>
+          <IM>1234567</IM>
+          <fone>1136851234</fone>
+          <email>contato@exemplotecnologia.com.br</email>
+          <regTrib>
+            <opSimpNac>3</opSimpNac>
+            <regApTribSN>1</regApTribSN>
+            <regEspTrib>0</regEspTrib>
+          </regTrib>
+        </prest>
+        <toma>
+          <CPF>52998224725</CPF>
+          <xNome>Maria Aparecida dos Santos</xNome>
+          <end>
+            <endNac>
+              <cMun>3550308</cMun>
+              <CEP>01001000</CEP>
+            </endNac>
+            <xLgr>Praça da Sé</xLgr>
+            <nro>100</nro>
+            <xCpl>Conjunto 12</xCpl>
+            <xBairro>Sé</xBairro>
+          </end>
+          <fone>11987654321</fone>
+          <email>maria.santos@example.com</email>
+        </toma>
+        <serv>
+          <locPrest>
+            <cLocPrestacao>3534401</cLocPrestacao>
+          </locPrest>
+          <cServ>
+            <cTribNac>010701</cTribNac>
+            <xDescServ>Suporte técnico mensal em informática: manutenção preventiva de 3 estações de trabalho, atualização do sistema de gestão e backup em nuvem. Referente a setembro/2026.</xDescServ>
+            <cNBS>115013000</cNBS>
+          </cServ>
+        </serv>
+        <valores>
+          <vServPrest>
+            <vServ>1500.50</vServ>
+          </vServPrest>
+          <vDescCondIncond>
+            <vDescIncond>50.00</vDescIncond>
+          </vDescCondIncond>
+          <trib>
+            <tribMun>
+              <tribISSQN>1</tribISSQN>
+              <tpRetISSQN>1</tpRetISSQN>
+            </tribMun>
+            <totTrib>
+              <pTotTribSN>6.00</pTotTribSN>
+            </totTrib>
+          </trib>
+        </valores>
+      </infDPS>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI="#DPS353440121122233300018100001000000000000027"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>ChAmAE1klLknjp6/16d4YRCKNFo=</DigestValue></Reference></SignedInfo><SignatureValue>UOdToKZt7/7goQOAJboRIOJJevVBS1060rK0cXAvHVJxbdptYjrOBxiTPLxR7aTYsbWWkAaZQTjJlTP5hnR42P97kSWlgwHweUueQ5troxwT7GhPJ6sOlWvdTsOZC+2WEYscVGk918vXqr6+JauzX6twSVyLqi9MYyBjYpXRfL3N9aqAsqtg09D4+hZMPtgMk5HSMLcGDNgHzqFWXblFykiNx65SzMXAllYs1NGHSXLc9FEkPRRXp2On9zd5TiNCeROx0ED7994Xvm76zDjANhGWop7jK4QZ4lu9BZmxGYGlo6rsIFKjKwOVpZhIdwPnRsKDYx4sKoXbcM1nnAsrlw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC7DCCAdSgAwIBAgIUEHnFmvn5QJxAn6/LpDDIBqCVsoUwDQYJKoZIhvcNAQELBQAwMDEuMCwGA1UEAwwlQ0VSVElGSUNBRE8gREUgVEVTVEUgLSBOQU8gSUNQLUJSQVNJTDAeFw0yNjEwMDcyMjE1MDRaFw0zNjEwMDUyMjE1MDRaMDAxLjAsBgNVBAMMJUNFUlRJRklDQURPIERFIFRFU1RFIC0gTkFPIElDUC1CUkFTSUwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCWMkfwE8bKJyOf2Jo8QkQRLH1vq1YmvhL0veRcYc4/72x7l42BXbSTDFQ09n8z6J8jtuBZWnCol88fRvgeygREvZzSDYxJgsarA+h981LXFjTVzDdyiRU4D6XAI1f1+5erc15WLDrPmAbF7wjFm9BUUF6W3f4KMOEUVQsCCDDg1HRT4XYw+ITR6mBdbFjw5fgvVRe5QnIjmw2cbai3exbFMVScWodxEyL1bPDeBdfREXm+7cn/fZYnCHGKO0uy8sQ5/F3Q6L53jBwnshDoLEXZmPqme0j7nsTGVW+5U9D2eugvFzwCiSGqAf31xXgORnZxv++1Wqemirx+rV3JDa2lAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAGon63RKiH9bmJs4X7tCk+SS682mB3EwKDkyBvDIXGQeQU5bX7H3XfWPWgi4U52ST65ODR3y70ILDsm92R9NHdHQ6aA54f7qofBbKfZ1PSzToatYIpbzqZpDWJzHWbJ9PH1ZrRHubB3ZvO0gXaC5NV0BJLUQb9Db1dpAUJy1z5r3+Wsx+s4cyG72MAevF1W/MsBR08y27a9FV/Q8FoDwGGrEFptBuCp1lvFIfA8N7qddh5fP8a117mC8y+0IerOOVyEi6klMusIebnBQ7iZBl8WLENcy26zHo0PbIDMrSdqVY2087FQjnNEQ96ar4iZZrq2CDG3DCrV8mtBOIgdk7DU=</X509Certificate></X509Data></KeyInfo></Signature></DPS>
+  </infNFSe>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI="#NFS35344012211222333000181000000000002726104488123750"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>FQko9UbWIdITOwhAUugL7KgdACE=</DigestValue></Reference></SignedInfo><SignatureValue>IrA478HZ1DulWm83pkkJu6N01MgKs85YAaxJN4jwhaVjbHDH4CEHQ9YNFn6+l907tnaP/OXNzbY28upar2CXmGsmpQp7MuXdfjzvet7YzHC3FSNaPgVeQrp5boGA7o91f7pdv5+Bk+NK14DHW6mDXhcqwe/WgtHKGklhmXzGAQgTJUU5cf7uO12/Z+uoo9jDkZGTX3jY5tFHnJzk5ASgynFC032so/bJ1dtEXKmjlJ6Vmuz2GHs/1mvv6/csVX/EziYcHPO1ui9M4+v8/2dCjbBFD9MwhDEvOGp4ETKzxUfgepOAToEuu2WOiiJBhrWjZFwWLbfV/+bWugbRVg2dOw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC7DCCAdSgAwIBAgIUEHnFmvn5QJxAn6/LpDDIBqCVsoUwDQYJKoZIhvcNAQELBQAwMDEuMCwGA1UEAwwlQ0VSVElGSUNBRE8gREUgVEVTVEUgLSBOQU8gSUNQLUJSQVNJTDAeFw0yNjEwMDcyMjE1MDRaFw0zNjEwMDUyMjE1MDRaMDAxLjAsBgNVBAMMJUNFUlRJRklDQURPIERFIFRFU1RFIC0gTkFPIElDUC1CUkFTSUwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCWMkfwE8bKJyOf2Jo8QkQRLH1vq1YmvhL0veRcYc4/72x7l42BXbSTDFQ09n8z6J8jtuBZWnCol88fRvgeygREvZzSDYxJgsarA+h981LXFjTVzDdyiRU4D6XAI1f1+5erc15WLDrPmAbF7wjFm9BUUF6W3f4KMOEUVQsCCDDg1HRT4XYw+ITR6mBdbFjw5fgvVRe5QnIjmw2cbai3exbFMVScWodxEyL1bPDeBdfREXm+7cn/fZYnCHGKO0uy8sQ5/F3Q6L53jBwnshDoLEXZmPqme0j7nsTGVW+5U9D2eugvFzwCiSGqAf31xXgORnZxv++1Wqemirx+rV3JDa2lAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAGon63RKiH9bmJs4X7tCk+SS682mB3EwKDkyBvDIXGQeQU5bX7H3XfWPWgi4U52ST65ODR3y70ILDsm92R9NHdHQ6aA54f7qofBbKfZ1PSzToatYIpbzqZpDWJzHWbJ9PH1ZrRHubB3ZvO0gXaC5NV0BJLUQb9Db1dpAUJy1z5r3+Wsx+s4cyG72MAevF1W/MsBR08y27a9FV/Q8FoDwGGrEFptBuCp1lvFIfA8N7qddh5fP8a117mC8y+0IerOOVyEi6klMusIebnBQ7iZBl8WLENcy26zHo0PbIDMrSdqVY2087FQjnNEQ96ar4iZZrq2CDG3DCrV8mtBOIgdk7DU=</X509Certificate></X509Data></KeyInfo></Signature></NFSe>

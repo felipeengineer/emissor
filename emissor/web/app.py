@@ -10,7 +10,7 @@ from flask import Flask, Response, abort, flash, redirect, render_template, requ
 from ..api import ErroSefin
 from ..banco import pasta_dados
 from ..dps import MOTIVOS_CANCELAMENTO
-from ..modelos import ErroValidacao, somente_digitos
+from ..modelos import ErroValidacao, normalizar_documento
 from ..servico import Emissor, ErroEmissor
 from ..simples import anexo_por_fator_r, calcular_aliquotas
 
@@ -20,13 +20,14 @@ STATUS_ROTULOS = {
     "emitida": "Emitida",
     "rejeitada": "Rejeitada",
     "cancelada": "Cancelada",
+    "substituida": "Substituída",
     "pendente": "Pendente",
     "erro_comunicacao": "Erro de comunicação",
 }
 
 
 def _form_tomador(f) -> dict | None:
-    doc = somente_digitos(f.get("tomador_documento"))
+    doc = normalizar_documento(f.get("tomador_documento"))
     if not doc:
         return None
     if not f.get("tomador_nome"):
@@ -133,7 +134,9 @@ def criar_app(emissor: Emissor | None = None) -> Flask:
             servico = _form_servico(request.form)
             try:
                 if request.form.get("acao") == "emitir":
-                    nota = emissor.emitir(tomador, servico)
+                    nota = emissor.emitir(
+                        tomador, servico, confirmar_competencia_anterior=bool(request.form.get("confirmar_competencia"))
+                    )
                     if nota["status"] == "emitida":
                         flash(f"NFS-e emitida! Chave de acesso {nota['chave_acesso']}", "ok")
                     else:
@@ -235,6 +238,7 @@ def criar_app(emissor: Emissor | None = None) -> Flask:
                         ambiente=int(f["ambiente"]),
                         serie=f.get("serie", "1"),
                         ultimo_numero_dps=int(f["ultimo_numero_dps"]) if f.get("ultimo_numero_dps") else None,
+                        data_autorizacao_emissor_nacional=f.get("data_autorizacao_emissor_nacional", ""),
                     )
                     flash("Parâmetros salvos.", "ok")
                 elif secao == "servico_padrao":
@@ -247,9 +251,10 @@ def criar_app(emissor: Emissor | None = None) -> Flask:
                         padrao = emissor.configuracao()["servico_padrao"]
                         # Só a alíquota efetiva (pTotTribSN). O pAliq do ISS é preenchido pelo próprio
                         # Sistema Nacional quando o município é conveniado.
-                        padrao.update(aliquota_simples=calculo["aliquota_efetiva"])
+                        # pTotTribSN = alíquota NOMINAL da faixa (Cartilha 20.5), não a efetiva.
+                        padrao.update(aliquota_simples=calculo["aliquota_nominal"])
                         emissor.salvar_parametros(servico_padrao=padrao)
-                        flash("Alíquota efetiva aplicada ao serviço padrão.", "ok")
+                        flash("Alíquota nominal aplicada ao serviço padrão (pTotTribSN).", "ok")
                 if secao != "calculadora":
                     return redirect(url_for("configuracoes"))
             except ERROS_DE_NEGOCIO as e:
@@ -274,7 +279,7 @@ def criar_app(emissor: Emissor | None = None) -> Flask:
 
     @app.template_filter("doc")
     def formatar_documento(doc) -> str:
-        d = somente_digitos(doc)
+        d = normalizar_documento(doc)
         if len(d) == 14:
             return f"{d[:2]}.{d[2:5]}.{d[5:8]}/{d[8:12]}-{d[12:]}"
         if len(d) == 11:

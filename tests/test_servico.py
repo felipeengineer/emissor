@@ -89,3 +89,51 @@ def test_calculadora_simples():
     assert anexo_por_fator_r(10000, 100000) == "V"
     with pytest.raises(ValueError):
         calcular_aliquotas("5000000")
+
+
+def test_certificado_de_outro_cnpj_e_recusado(emissor, cliente_falso):
+    # O certificado de teste é de 11222333000181; trocar o prestador simula o e-CNPJ do contador (E0718).
+    emissor.salvar_prestador({"documento": "12ABC34501DE35", "codigo_municipio": "3534401", "opcao_simples": 3})
+    with pytest.raises(ErroEmissor, match="E0718"):
+        emissor.emitir(None, {"valor": "10"})
+    assert not cliente_falso.enviados
+    assert any("E0718" in p for p in emissor.status()["pendencias"])
+
+
+def test_competencia_anterior_a_migracao_em_producao(emissor, cliente_falso):
+    emissor.salvar_parametros(ambiente=1, data_autorizacao_emissor_nacional="2026-11-01")
+    with pytest.raises(ErroEmissor, match="E0025"):
+        emissor.emitir(None, {"valor": "10", "competencia": "2026-10-20"})
+    assert not cliente_falso.enviados
+    nota = emissor.emitir(None, {"valor": "10", "competencia": "2026-11-03"})
+    assert nota["status"] == "emitida"
+    # confirmação explícita libera (ex.: data de autorização diferente no cadastro do município)
+    assert emissor.emitir(None, {"valor": "10", "competencia": "2026-10-20"}, confirmar_competencia_anterior=True)["status"] == "emitida"
+
+
+def test_homologacao_nao_bloqueia_competencia(emissor):
+    assert emissor.emitir(None, {"valor": "10", "competencia": "2026-10-01"})["status"] == "emitida"
+
+
+def test_rejeicao_traz_orientacao(emissor, cliente_falso):
+    cliente_falso.erro = ErroSefin("DPS rejeitada", 400, [{"Codigo": "E0039", "Descricao": "x"}])
+    nota = emissor.emitir(None, {"valor": "10"})
+    assert nota["status"] == "rejeitada"
+    assert "01/11/2026" in nota["dica"] and "01/11/2026" in nota["mensagem"]
+
+
+def test_cancelamento_com_timeout_e_reconciliado(emissor, cliente_falso):
+    nota = emissor.emitir(None, {"valor": "10"})
+    cliente_falso.erro_evento = ErroSefin("timeout")
+    assert emissor.cancelar(nota["id"], 1, "Valor informado incorretamente")["status"] == "cancelada"
+
+
+def test_sincronizar_detecta_cancelamento_feito_fora(emissor, cliente_falso):
+    nota = emissor.emitir(None, {"valor": "10"})
+    cliente_falso.eventos_externos = [{"tipoEvento": "105102"}]
+    assert emissor.sincronizar(nota["id"])["status"] == "substituida"
+
+
+def test_serie_fora_da_faixa_da_api(emissor):
+    with pytest.raises(ErroValidacao, match="E0010"):
+        emissor.salvar_parametros(serie="70000")

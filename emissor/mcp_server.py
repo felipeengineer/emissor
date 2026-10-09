@@ -56,9 +56,17 @@ class ServicoIn(BaseModel):
     codigo_municipio_prestacao: str = Field("", description="IBGE do local da prestação; padrão = município do prestador")
     codigo_tributacao_municipal: str = ""
     codigo_nbs: str = ""
-    retencao_iss: Literal[1, 2, 3] = Field(1, description="1=não retido, 2=retido pelo tomador, 3=retido pelo intermediário")
-    aliquota_iss: str | None = Field(None, description="pAliq % (ME/EPP). Deixe vazio: o Sistema Nacional preenche a alíquota quando o município de incidência é conveniado; informe só para município fora do sistema")
-    aliquota_simples: str | None = Field(None, description="pTotTribSN: alíquota efetiva do SN % (ME/EPP)")
+    retencao_iss: Literal[1, 2] = Field(
+        1, description="1=não retido, 2=retido pelo tomador (exige endereço do tomador; proibido para MEI)"
+    )
+    aliquota_iss: str | None = Field(
+        None,
+        description="pAliq %: obrigatória para ME/EPP só quando o ISS é retido (mín. 1,80, máx. 5); "
+        "nos demais casos não é enviada (regras E0621/E0625)",
+    )
+    aliquota_simples: str | None = Field(
+        None, description="pTotTribSN: alíquota NOMINAL do Simples da faixa atual (ME/EPP; Cartilha 20.5)"
+    )
     desconto_incondicionado: str = "0"
     competencia: str = Field("", description="Data de competência AAAA-MM-DD (padrão: hoje)")
 
@@ -96,10 +104,12 @@ def criar_servidor(emissor: Emissor | None = None) -> MCPServer:
         certificado_caminho: str | None = None,
         servico_padrao: ServicoIn | None = None,
         ultimo_numero_dps: int | None = None,
+        data_autorizacao_emissor_nacional: str | None = None,
     ) -> dict:
-        """Ajusta ambiente (1=produção, 2=homologação), série da DPS, caminho do certificado .pfx, serviço padrão
-        e o último nº de DPS já usado (para continuar a numeração de outro sistema). A senha do certificado
-        deve ser definida pela interface web ou pela variável de ambiente EMISSOR_CERT_SENHA."""
+        """Ajusta ambiente (1=produção, 2=homologação), série da DPS (1 a 49999), caminho do certificado .pfx,
+        serviço padrão, o último nº de DPS já usado e a data de autorização do Emissor Nacional (AAAA-MM-DD;
+        competências anteriores são recusadas em produção, regra E0025; padrão ME/EPP 2026-11-01). A senha do
+        certificado deve ser definida pela interface web ou pela variável de ambiente EMISSOR_CERT_SENHA."""
         padrao = None
         if servico_padrao is not None:
             padrao = servico_padrao.model_dump(exclude={"valor", "competencia", "desconto_incondicionado"})
@@ -109,13 +119,14 @@ def criar_servidor(emissor: Emissor | None = None) -> MCPServer:
             certificado_caminho=certificado_caminho,
             servico_padrao=padrao,
             ultimo_numero_dps=ultimo_numero_dps,
+            data_autorizacao_emissor_nacional=data_autorizacao_emissor_nacional,
         )
 
     @mcp.tool(annotations=leitura)
     def calcular_aliquota_simples(
         rbt12: str, anexo: Literal["III", "IV", "V"] | None = None, folha_12_meses: str | None = None
     ) -> dict:
-        """Estima a alíquota efetiva do Simples Nacional (pTotTribSN) e a parcela de ISS (informativa) a partir da
+        """Calcula a alíquota nominal (use em pTotTribSN, Cartilha 20.5), a efetiva e a parcela de ISS a partir da
         receita bruta dos últimos 12 meses. Se informar a folha de 12 meses sem anexo, aplica o fator R (III ou V)."""
         if anexo is None:
             anexo = anexo_por_fator_r(folha_12_meses, rbt12) if folha_12_meses else "III"
@@ -137,18 +148,26 @@ def criar_servidor(emissor: Emissor | None = None) -> MCPServer:
         return emissor.pre_visualizar(_tomador(tomador, tomador_documento), servico.model_dump())
 
     @mcp.tool(annotations=ToolAnnotations(destructive_hint=False, idempotent_hint=False, open_world_hint=True))
-    def emitir_nfse(servico: ServicoIn, tomador: TomadorIn | None = None, tomador_documento: str = "") -> dict:
+    def emitir_nfse(
+        servico: ServicoIn,
+        tomador: TomadorIn | None = None,
+        tomador_documento: str = "",
+        confirmar_competencia_anterior: bool = False,
+    ) -> dict:
         """Emite a NFS-e: assina a DPS com o certificado A1 e envia à SEFIN Nacional. Informe o tomador completo
         ou só `tomador_documento` de um cliente já cadastrado (ou nenhum, para tomador não identificado).
-        Em produção, confirme os dados com o usuário antes de chamar."""
-        nota = emissor.emitir(_tomador(tomador, tomador_documento), servico.model_dump())
+        Em produção, confirme os dados com o usuário antes de chamar. Competência anterior à autorização do
+        Emissor Nacional é recusada (E0025) salvo confirmar_competencia_anterior=True."""
+        nota = emissor.emitir(
+            _tomador(tomador, tomador_documento), servico.model_dump(), confirmar_competencia_anterior
+        )
         nota.pop("dps_xml", None)
         nota.pop("nfse_xml", None)
         return nota
 
     @mcp.tool(annotations=leitura)
     def listar_notas(
-        status: Literal["emitida", "rejeitada", "cancelada", "pendente", "erro_comunicacao"] | None = None,
+        status: Literal["emitida", "rejeitada", "cancelada", "substituida", "pendente", "erro_comunicacao"] | None = None,
         busca: str = "",
         limite: int = 20,
     ) -> list[dict]:
@@ -178,7 +197,8 @@ def criar_servidor(emissor: Emissor | None = None) -> MCPServer:
 
     @mcp.tool(annotations=ToolAnnotations(destructive_hint=False, idempotent_hint=True, open_world_hint=True))
     def sincronizar_nota(nota_id: int) -> dict:
-        """Para nota pendente ou com erro de comunicação: verifica na SEFIN se a DPS foi convertida em NFS-e."""
+        """Confere a nota na SEFIN: se a DPS pendente virou NFS-e e se houve cancelamento ou substituição
+        (inclusive feitos fora deste app)."""
         nota = emissor.sincronizar(nota_id)
         nota.pop("dps_xml", None)
         nota.pop("nfse_xml", None)
@@ -195,8 +215,20 @@ def criar_servidor(emissor: Emissor | None = None) -> MCPServer:
 
     @mcp.tool(annotations=ToolAnnotations(destructive_hint=False, idempotent_hint=True, open_world_hint=True))
     def baixar_danfse(nota_id: int) -> dict:
-        """Baixa o PDF do DANFSe (documento auxiliar) e informa onde foi salvo."""
-        return {"arquivo": str(emissor.baixar_danfse(nota_id))}
+        """Gera localmente o PDF do DANFSe (NT 008 v1.02) a partir do XML da NFS-e e informa onde foi salvo.
+        O documento fiscal é o XML; o link da Consulta Pública também é devolvido."""
+        nota = emissor.obter_nota(nota_id) or {}
+        return {
+            "arquivo": str(emissor.baixar_danfse(nota_id)),
+            "consulta_publica": emissor.url_consulta_publica(nota.get("chave_acesso", "")),
+        }
+
+    @mcp.tool(annotations=ToolAnnotations(read_only_hint=True, open_world_hint=True))
+    def consultar_convenio_municipio(codigo_municipio: str = "") -> dict:
+        """Consulta na SEFIN os parâmetros do convênio do município (padrão: o do prestador). Útil para saber se
+        o município liberou os emissores públicos (aderenteEmissorNacional) antes de 01/11/2026."""
+        r = emissor.consultar_convenio(codigo_municipio or None)
+        return r if isinstance(r, dict) else {"resposta": r}
 
     @mcp.resource("emissor://motivos-cancelamento")
     def motivos_cancelamento() -> str:

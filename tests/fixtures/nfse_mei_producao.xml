@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<NFSe xmlns="http://www.sped.fazenda.gov.br/nfse" versao="1.01">
+  <infNFSe Id="NFS35503082245723174000110000000000153226100007319040">
+    <xLocEmi>São Paulo</xLocEmi>
+    <xLocPrestacao>São Paulo</xLocPrestacao>
+    <nNFSe>1532</nNFSe>
+    <cLocIncid>3550308</cLocIncid>
+    <xLocIncid>São Paulo</xLocIncid>
+    <xTribNac>Barbearia, cabeleireiros, manicuros, pedicuros e congêneres.</xTribNac>
+    <xNBS>Serviços de cabeleireiros e barbeiros</xNBS>
+    <verAplic>SefinNacional_1.6.0</verAplic>
+    <ambGer>2</ambGer>
+    <tpEmis>1</tpEmis>
+    <procEmi>1</procEmi>
+    <cStat>107</cStat>
+    <dhProc>2026-10-07T16:42:11-03:00</dhProc>
+    <nDFSe>771203</nDFSe>
+    <emit>
+      <CNPJ>45723174000110</CNPJ>
+      <xNome>JOAO DA SILVA BARBEARIA</xNome>
+      <enderNac>
+        <xLgr>Rua Augusta</xLgr>
+        <nro>2203</nro>
+        <xBairro>Jardim Paulista</xBairro>
+        <cMun>3550308</cMun>
+        <UF>SP</UF>
+        <CEP>01413000</CEP>
+      </enderNac>
+    </emit>
+    <valores>
+      <vLiq>80.00</vLiq>
+    </valores>
+    <DPS versao="1.01">
+      <infDPS Id="DPS355030824572317400011000900000000000001532">
+        <tpAmb>1</tpAmb>
+        <dhEmi>2026-10-07T16:42:09-03:00</dhEmi>
+        <verAplic>emissor-nfse-0.1.0</verAplic>
+        <serie>900</serie>
+        <nDPS>1532</nDPS>
+        <dCompet>2026-10-07</dCompet>
+        <tpEmit>1</tpEmit>
+        <cLocEmi>3550308</cLocEmi>
+        <prest>
+          <CNPJ>45723174000110</CNPJ>
+          <regTrib>
+            <opSimpNac>2</opSimpNac>
+            <regEspTrib>0</regEspTrib>
+          </regTrib>
+        </prest>
+        <serv>
+          <locPrest>
+            <cLocPrestacao>3550308</cLocPrestacao>
+          </locPrest>
+          <cServ>
+            <cTribNac>060101</cTribNac>
+            <xDescServ>Corte de cabelo masculino e barba</xDescServ>
+            <cNBS>126021000</cNBS>
+          </cServ>
+        </serv>
+        <valores>
+          <vServPrest>
+            <vServ>80.00</vServ>
+          </vServPrest>
+          <trib>
+            <tribMun>
+              <tribISSQN>1</tribISSQN>
+              <tpRetISSQN>1</tpRetISSQN>
+            </tribMun>
+            <totTrib>
+              <indTotTrib>0</indTotTrib>
+            </totTrib>
+          </trib>
+        </valores>
+      </infDPS>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI="#DPS355030824572317400011000900000000000001532"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>ZcX6qBO/oVhV8PrrQ2DysUJW6no=</DigestValue></Reference></SignedInfo><SignatureValue>iYtOc8j8TUOxORvimz74zZAhDrSWMMmX5dBRxtM2Iv9zMgey0nbOu/pOwwW4Ta3lLvuneySQSmZYSw7BWdNPfg09eUMgN/CQpHyNJ01lvPlGxOblg4qcfTnNLn6gddRIJQjkd7BV8pAM29ulHNEECceBkZk43aSD70sBmrjxqq8jgOJyZqXo98VcPWOTYBsV0Z0aRf434T6qVZ6UtGXwb+48mtHRXkfTlSXmml0/yFQ1eWNpna8a46xd3dBYUo2fYtT16Sbm5PL0PhVeeZpzZE247O0PfWF8gf5H/wEVoC6GZ0jSui8wpi56/KBkGAa1ROoNwGVZVdGtGuZMqwObUA==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC7DCCAdSgAwIBAgIUEHnFmvn5QJxAn6/LpDDIBqCVsoUwDQYJKoZIhvcNAQELBQAwMDEuMCwGA1UEAwwlQ0VSVElGSUNBRE8gREUgVEVTVEUgLSBOQU8gSUNQLUJSQVNJTDAeFw0yNjEwMDcyMjE1MDRaFw0zNjEwMDUyMjE1MDRaMDAxLjAsBgNVBAMMJUNFUlRJRklDQURPIERFIFRFU1RFIC0gTkFPIElDUC1CUkFTSUwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCWMkfwE8bKJyOf2Jo8QkQRLH1vq1YmvhL0veRcYc4/72x7l42BXbSTDFQ09n8z6J8jtuBZWnCol88fRvgeygREvZzSDYxJgsarA+h981LXFjTVzDdyiRU4D6XAI1f1+5erc15WLDrPmAbF7wjFm9BUUF6W3f4KMOEUVQsCCDDg1HRT4XYw+ITR6mBdbFjw5fgvVRe5QnIjmw2cbai3exbFMVScWodxEyL1bPDeBdfREXm+7cn/fZYnCHGKO0uy8sQ5/F3Q6L53jBwnshDoLEXZmPqme0j7nsTGVW+5U9D2eugvFzwCiSGqAf31xXgORnZxv++1Wqemirx+rV3JDa2lAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAGon63RKiH9bmJs4X7tCk+SS682mB3EwKDkyBvDIXGQeQU5bX7H3XfWPWgi4U52ST65ODR3y70ILDsm92R9NHdHQ6aA54f7qofBbKfZ1PSzToatYIpbzqZpDWJzHWbJ9PH1ZrRHubB3ZvO0gXaC5NV0BJLUQb9Db1dpAUJy1z5r3+Wsx+s4cyG72MAevF1W/MsBR08y27a9FV/Q8FoDwGGrEFptBuCp1lvFIfA8N7qddh5fP8a117mC8y+0IerOOVyEi6klMusIebnBQ7iZBl8WLENcy26zHo0PbIDMrSdqVY2087FQjnNEQ96ar4iZZrq2CDG3DCrV8mtBOIgdk7DU=</X509Certificate></X509Data></KeyInfo></Signature></DPS>
+  </infNFSe>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI="#NFS35503082245723174000110000000000153226100007319040"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>rxCz8stB1K6o/dHVDUxc3SGCx8s=</DigestValue></Reference></SignedInfo><SignatureValue>IX02WTCLv0p0bYADhiyuiUNeq+IQCw+6Tld+fHyASzxFHOuxBEP1rFd2XEoUaHkfeIDpQUcHZPm9vvMm9pKiwQUIdssUAxWI+QUPuVH+DRNVUeYqnnCOjZNL7m7ZL9waJ2RZOs2r32NKCKRj19XPGqOgxCYQJ/5Bo0rIMJ/pwdA0aRwfPZKPR4bU7HV3dI+JgcfI90Dvi+9lo+h7AlfavqXbz9gFcwLUEFlS/dpg2zpTle0sgpiIGHCmlc4a+fVTNrWySTYenGXzOxKF67NbXerrU/XP4958ApZCJD/v5I2daxxRvOq5WMKH3ABECw1s1pLl/hWuirgRh2w/w34Hug==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC7DCCAdSgAwIBAgIUEHnFmvn5QJxAn6/LpDDIBqCVsoUwDQYJKoZIhvcNAQELBQAwMDEuMCwGA1UEAwwlQ0VSVElGSUNBRE8gREUgVEVTVEUgLSBOQU8gSUNQLUJSQVNJTDAeFw0yNjEwMDcyMjE1MDRaFw0zNjEwMDUyMjE1MDRaMDAxLjAsBgNVBAMMJUNFUlRJRklDQURPIERFIFRFU1RFIC0gTkFPIElDUC1CUkFTSUwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCWMkfwE8bKJyOf2Jo8QkQRLH1vq1YmvhL0veRcYc4/72x7l42BXbSTDFQ09n8z6J8jtuBZWnCol88fRvgeygREvZzSDYxJgsarA+h981LXFjTVzDdyiRU4D6XAI1f1+5erc15WLDrPmAbF7wjFm9BUUF6W3f4KMOEUVQsCCDDg1HRT4XYw+ITR6mBdbFjw5fgvVRe5QnIjmw2cbai3exbFMVScWodxEyL1bPDeBdfREXm+7cn/fZYnCHGKO0uy8sQ5/F3Q6L53jBwnshDoLEXZmPqme0j7nsTGVW+5U9D2eugvFzwCiSGqAf31xXgORnZxv++1Wqemirx+rV3JDa2lAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAGon63RKiH9bmJs4X7tCk+SS682mB3EwKDkyBvDIXGQeQU5bX7H3XfWPWgi4U52ST65ODR3y70ILDsm92R9NHdHQ6aA54f7qofBbKfZ1PSzToatYIpbzqZpDWJzHWbJ9PH1ZrRHubB3ZvO0gXaC5NV0BJLUQb9Db1dpAUJy1z5r3+Wsx+s4cyG72MAevF1W/MsBR08y27a9FV/Q8FoDwGGrEFptBuCp1lvFIfA8N7qddh5fP8a117mC8y+0IerOOVyEi6klMusIebnBQ7iZBl8WLENcy26zHo0PbIDMrSdqVY2087FQjnNEQ96ar4iZZrq2CDG3DCrV8mtBOIgdk7DU=</X509Certificate></X509Data></KeyInfo></Signature></NFSe>

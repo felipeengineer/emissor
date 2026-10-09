@@ -33,7 +33,7 @@ td.num { text-align: right; white-space: nowrap; }
 .tabela { overflow-x: auto; }
 .tag { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; }
 .tag.emitida { background: #dcfae6; color: var(--ok); } .tag.rejeitada, .tag.erro_comunicacao { background: #fee4e2; color: var(--erro); }
-.tag.cancelada { background: #eaecf0; color: #344054; } .tag.pendente { background: #fef0c7; color: var(--aviso); }
+.tag.cancelada, .tag.substituida { background: #eaecf0; color: #344054; } .tag.pendente { background: #fef0c7; color: var(--aviso); }
 .flash { padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; }
 .flash.ok { background: #dcfae6; color: #085d3a; } .flash.erro { background: #fee4e2; color: #912018; }
 .kpis { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 20px; }

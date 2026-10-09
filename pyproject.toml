@@ -15,6 +15,7 @@ dependencies = [
     "requests>=2.31",
     "flask>=3",
     "mcp>=2,<3",
+    "reportlab>=4",
 ]
 
 [project.optional-dependencies]
@@ -29,6 +30,7 @@ include = ["emissor*"]
 [tool.setuptools.package-data]
 "emissor.web" = ["templates/*.html", "static/*"]
 "emissor" = ["schemas/*/*.xsd", "schemas/*/*.md"]
+"emissor.dados" = ["*.csv", "*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
